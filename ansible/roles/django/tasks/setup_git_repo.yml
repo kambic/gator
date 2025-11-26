@@ -1,0 +1,41 @@
+---
+- name: Setup the Git repo
+  ansible.builtin.git:
+    repo: "https://oauth2:{{ git_token }}@gitlab.telekom.si/vidra/alligator.git"
+    dest: "{{ app_path }}"
+    version: master
+    force: yes
+    update: yes
+    recursive: yes
+    accept_hostkey: yes
+    clone: yes
+  when: setup_git_repo | default(false)
+  tags: git
+
+#- name: Setup the Git repo
+#  ansible.builtin.git:
+#    repo: "{{ repo_url }}"
+#    dest: "{{ app_path }}"
+#    version: "master"
+#    force: yes
+#    update: yes
+#    recursive: yes          # Clones submodules too
+#    track_submodules: yes   # Keeps submodules in sync with parent repo
+#    # Use token-based auth
+#    clone: yes
+#    accept_hostkey: yes
+#  environment:
+##    GIT_ASKPASS: /bin/echo
+#    GIT_TERMINAL_PROMPT: 0 # reports "terminal prompts disabled" on missing password
+#    GIT_USERNAME: "e-kambicr"
+#    GIT_PASSWORD: "{{ git_token }}"
+#  when: setup_git_repo is defined and setup_git_repo
+##  notify: Restart application
+#  tags: git
+
+- name: Delete all .pyc files
+  ansible.builtin.command: find . -name '*.pyc' -delete
+  args:
+    chdir: "{{ project_path }}"
+  tags: git
+  changed_when: false

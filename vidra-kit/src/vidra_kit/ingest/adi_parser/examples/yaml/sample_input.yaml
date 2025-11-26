@@ -1,0 +1,12 @@
+title:
+  en: "Inception"
+  fr: "Inception"
+synopsis:
+  en: "A thief who steals corporate secrets."
+asset_id: "INC1234"
+poster_id: "INC1234-POSTER"
+poster_resolution: "1280x720"
+movie_bitrate: "9000000"
+trailer_id: "INC1234-TRAILER"
+trailer_bitrate: "3000000"
+default_lang: "en"

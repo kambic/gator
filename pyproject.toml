@@ -1,0 +1,114 @@
+[project]
+name = "alligator"
+version = "0.1.1"
+requires-python = ">=3.12"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.1",
+    "Framework :: Django :: 5.2",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+license = { text = "BSD-3-Clause" }
+
+dependencies = [
+    "aiohttp>=3.13.1",
+    "black>=25.11.0",
+    "bx-django-utils>=91",
+    "celery>=5.4.0",
+    "crispy-bootstrap5==2024.10",
+    "django>=5.2.6",
+    "django-allauth>=65.4.1",
+    "django-celery-email>=3.0.0",
+    "django-celery-results>=2.6.0",
+    "django-cors-headers>=4.9.0",
+    "django-debug-toolbar>=5.0.1",
+    "django-environ>=0.12.0",
+    "django-filer>=3.4.1",
+    "django-filter>=24.3",
+    "django-htmx>=1.26.0",
+    "django-huey-monitor>=0.10.1",
+    "django-imagekit>=5.0.0",
+    "django-import-export>=4.3.12",
+    "django-jazzmin>=3.0.1",
+    "django-mptt>=0.16.0",
+    "django-redis>=5.4.0",
+    "django-taggit>=6.1.0",
+    "django-tinymce>=4.1.0",
+    "django-vite>=3.1.0",
+    "djangorestframework>=3.16.1",
+    "drf-yasg>=1.21.8",
+    "filetype>=1.2.0",
+    "gunicorn>=23.0.0",
+    "huey>=2.5.4",
+    "loguru>=0.7.3",
+    "m3u8>=6.0.0",
+    "markdown>=3.7",
+    "pillow>=11.1.0",
+    "psycopg[binary,pool]>=3.2.4",
+    "pymemcache>=4.0.0",
+    "pysubs2>=1.8.0",
+    "python3-saml>=1.16.0",
+    "requests>=2.32.3",
+    "rich>=14.2.0",
+    "structlog>=25.5.0",
+    "uvicorn>=0.38.0",
+    "vidra-kit",
+    "vod-metadata>=2016.1.6",
+]
+
+[dependency-groups]
+dev = [
+    "celery-types>=0.23.0",
+    "faker>=35.2.0",
+    "flake8>=7.1.1",
+    "flower>=2.0.1",
+    "hypercorn>=0.17.3",
+    "ipython>=8.32.0",
+    "pytest-cov>=6.0.0",
+    "pytest-django>=4.9.0",
+    "pytest-factoryboy>=2.7.0",
+    "rpdb>=0.2.0",
+    "tqdm>=4.67.1",
+    "pylint>=4.0.2",
+    "pep8>=1.7.1",
+    "django-silk>=5.4.3",
+    "git-archive-all>=1.23.1",
+    "snoop>=0.6.0",
+    "django-cors-headers>=4.9.0",
+    "django-extensions>=4.1",
+    "djhtml>=3.0.10",
+]
+
+[tool.black]
+line-length = 200
+target-version = ['py36', 'py37', 'py38']
+skip-string-normalization = true
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.*
+  | \.gitc
+  | \.mypy_cache
+  | \.venv
+  # The following are specific to Black, you probably don't want those.
+  | blib2to3
+  | tests/data
+  | profiling
+)/
+'''
+
+[tool.uv.sources]
+vidra-kit = { path = "vidra-kit", editable = true }

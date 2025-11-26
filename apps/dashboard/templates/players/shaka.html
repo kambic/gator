@@ -1,0 +1,107 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+  <div class="container" x-data="shakaPlayer()" x-init="init">
+    <h2 class="mb-4">🎞️ Shaka Player</h2>
+    <h1 class="text-3xl font-bold underline"> Hello world! </h1>
+    <div class="row mb-3">
+      <div class="col-12">
+        <div class="input-group">
+          <input x-model="manifest" type="url" id="video-url" class="form-control" placeholder="Enter DASH or HLS URL"/>
+          <button x-on:click="loadStream()" type="button" id="load-btn" class="btn btn-primary">Load & Play</button>
+          <button x-on:click="toggleAbr()" type="button" id="abr-btn" class="btn btn-warning">Toggle ABR</button>
+          <button type="button" id="quality-up-btn" class="btn btn-success">Quality Up</button>
+          <button type="button" id="quality-down-btn" class="btn btn-info">Quality Down</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Video -->
+    <video x-ref="video"
+           poster="//shaka-player-demo.appspot.com/assets/poster.jpg"
+           controls autoplay class="w-100 border rounded shadow"></video>
+
+    <div class="row g-3 mb-4">
+      <!-- Subtitle Track Select -->
+      <div class="col-md-6">
+        <label for="subtitle-select" class="form-label">Subtitle Track</label>
+        <select id="subtitle-select" class="form-select" @change="changeSubtitle($event.target.value)">
+          <option value="">Off</option>
+          <template x-for="(track, index) in subtitleTracks" :key="index">
+            <option :value="index" x-text="track.label || track.language"></option>
+          </template>
+        </select>
+      </div>
+
+      <!-- Video Quality Select -->
+      <div class="col-md-6">
+        <label for="quality-select" class="form-label">Video Quality</label>
+        <select id="quality-select" class="form-select" @change="changeQuality($event.target.value)">
+          <option value="auto">Auto (ABR)</option>
+          <template x-for="(track, index) in videoTracks" :key="index">
+            <option :value="index"
+                    x-text="track.height + 'p (' + Math.round(track.bandwidth / 1000) + ' kbps)'"></option>
+          </template>
+        </select>
+      </div>
+    </div>
+
+    <!-- Upload Subtitle File -->
+    <div class="mb-4">
+      <label class="form-label">Upload Subtitle (.vtt)</label>
+      <input type="file" accept=".vtt" class="form-control" @change="handleSubtitleUpload($event)">
+    </div>
+
+
+    <h2>Shaka Metrics — live charts (Chart.js + Alpine)</h2>
+
+
+    <div x-data="shakaMetrics()" class="grid d-none">
+      <div>
+        <div class="card">
+          <strong>Estimated Bandwidth (Mbps)</strong>
+          <canvas id="bandwidthChart"></canvas>
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+          <strong>Buffer Length (s)</strong>
+          <canvas id="bufferChart"></canvas>
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+          <strong>Current Video Bitrate (kbps)</strong>
+          <canvas id="bitrateChart"></canvas>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <strong>Latest stats (snapshot)</strong>
+          <pre x-text="latestJSON"></pre>
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+          <strong>Controls</strong>
+          <div style="margin-top:8px;">
+            <label>Poll interval (s)</label>
+            <input type="range" min="0.5" max="5" step="0.5" x-model.number="pollIntervalSec"
+                   @input="updateInterval()"/>
+            <div class="small">Current: <span x-text="pollIntervalSec"></span>s</div>
+          </div>
+          <div style="margin-top:10px;">
+            <button @click="clearData()">Clear data</button>
+            <button @click="forceSnapshot()">Force snapshot</button>
+          </div>
+          <p class="small" style="margin-top:8px;">
+            Tip: after you create your Shaka Player instance, assign <code>window.shakaPlayer = player</code>. The
+            script will pick it up automatically.
+          </p>
+        </div>
+      </div>
+    </div>
+    <pre x-text="config" class="d-none" style="white-space: pre; font-family: monospace;"></pre>
+
+  </div>
+{% endblock %}

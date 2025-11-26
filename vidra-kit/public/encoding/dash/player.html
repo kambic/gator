@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Shaka Player - Local DASH</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.5.4/shaka-player.compiled.js"></script>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: #000;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      video {
+        width: 80%;
+        height: auto;
+        max-height: 90vh;
+        background: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <video id="video" controls autoplay></video>
+
+    <script>
+      async function initPlayer() {
+        const manifestUri = "manifest.mpd";
+
+        const video = document.getElementById("video");
+        const player = new shaka.Player(video);
+
+        player.addEventListener("error", (e) =>
+          console.error("Error code", e.detail.code, "object", e.detail)
+        );
+        try {
+          await player.load(manifestUri);
+          console.log("The video has now been loaded!");
+        } catch (error) {
+          console.error("Error loading manifest:", error);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", initPlayer);
+    </script>
+  </body>
+</html>

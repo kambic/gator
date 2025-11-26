@@ -1,0 +1,27 @@
+---
+- name: Create Gunicorn runtime directory
+  become: true
+  ansible.builtin.file:
+    path: /var/run/alligator
+    state: directory
+    owner: "{{ gunicorn_user }}"
+    group: "{{ gunicorn_group }}"
+    mode: "0755"
+
+- name: Create systemd service for Gunicorn
+  tags: systemd
+  become: yes
+  template:
+    src: gunicorn.service.j2
+    dest: "/etc/systemd/system/{{ gunicorn_service }}.service"
+  register: gunicorn_unit
+
+
+- name: Enable and start Gunicorn service
+  tags: systemd
+  become: yes
+  systemd:
+    name: "{{ gunicorn_service }}"
+    daemon_reload : true
+    state: restarted
+    enabled: true

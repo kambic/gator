@@ -1,0 +1,140 @@
+# Reference docs: https://docs.docker.com/compose/compose-file/compose-file-v3/
+
+services:
+  db:
+    image: postgres:latest
+    init: true
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-postgres}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  redis:
+    container_name: redis
+    image: redis:7.0
+    init: true
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  web:
+    container_name: web
+#    image: TS/alligator:python
+    init: true
+    build:
+      context: .
+      dockerfile: config/docker/Dockerfile.web
+      target: dev
+
+    command: sh -c "./manage.py migrate --noinput && ./manage.py runserver 0.0.0.0:8000"
+
+    volumes:
+      - .:/srv/app:cached
+
+    ports:
+      - "8000:8000"
+
+    depends_on:
+      node:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+    environment:
+      USE_DOCKER: "on"
+      DJANGO_SETTINGS_MODULE: config.settings
+
+  worker:
+    container_name: worker
+    image: TS/alligator:python
+    init: true
+
+    command: sh -c "celery -A config worker -l info"
+
+    volumes:
+      - .:/srv/app:cached
+
+    depends_on:
+      web:
+        condition: service_started
+
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings
+
+  node:
+    container_name: node
+    image: TS/alligator:node
+    build:
+      context: .
+      dockerfile: config/docker/Dockerfile.node
+    init: true
+    working_dir: /srv/app
+
+    command: sh -c "npm run dev"
+
+    volumes:
+      - .:/srv/app
+      - node_modules:/srv/app/node_modules
+
+    ports:
+      - "3000:3000"
+
+    environment:
+      NODE_ENV: development
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  docs:
+    container_name: docs
+    image: TS/alligator:python
+    init: true
+
+    command: sh -c "mkdocs serve -f config/mkdocs.yml --dev-addr 0.0.0.0:4000"
+
+    volumes:
+      - .:/srv/app:cached
+
+    ports:
+      - "4000:4000"
+
+    environment:
+      LIVE_RELOAD_SUPPORT: "true"
+      FAST_MODE: "true"
+
+    profiles:
+      - full
+      - docs
+
+    depends_on:
+      web:
+        condition: service_started
+
+volumes:
+  postgres_data:
+  redis_data:
+  node_modules:

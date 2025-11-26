@@ -1,0 +1,38 @@
+---
+
+#- name: Install Nginx
+#  ansible.builtin.apt: name=nginx update_cache={{ update_apt_cache }} state=present
+#  tags: packages
+
+
+- name: Ensure that the default site is disabled
+  ansible.builtin.file: path=/etc/nginx/sites-enabled/default state=absent
+
+- name: Create nginx config
+  become: true
+  template:
+    src: nginx.conf.j2
+    dest: "/etc/nginx/nginx.conf"
+
+
+- name: Create nginx site
+  become: true
+  template:
+    src: site.conf.j2
+    dest: "/etc/nginx/sites-available/{{ app_name }}"
+
+- name: Ensure that the application site is enabled
+  become: true
+  ansible.builtin.file: src=/etc/nginx/sites-available/{{ app_name }}
+    dest=/etc/nginx/sites-enabled/{{ app_name }}
+    state=link
+
+
+- name: Nginx service restart
+  tags: systemd
+  become: yes
+  systemd:
+    name: nginx
+    daemon_reload: true
+    state: restarted
+    enabled: true

@@ -1,0 +1,16 @@
+{% if error_type == 'PermissionDenied' %}
+  <li class="p-2 text-danger">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    Access denied to this directory
+  </li>
+{% elif error_type == 'Http404' %}
+  <li class="p-2 text-warning">
+    <i class="fas fa-exclamation-circle me-2"></i>
+    Directory not found
+  </li>
+{% else %}
+  <li class="p-2 text-danger">
+    <i class="fas fa-bug me-2"></i>
+    Error: {{ message }}
+  </li>
+{% endif %}

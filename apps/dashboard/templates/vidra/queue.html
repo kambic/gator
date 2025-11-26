@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vidra Queue</title>
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@1.9.5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <style>
+      .tab {
+          display: inline-block;
+          padding: 10px;
+          cursor: pointer;
+      }
+
+      .active-tab {
+          background-color: #ccc;
+      }
+
+      .content {
+          margin-top: 20px;
+      }
+
+      pre {
+          background: #f3f3f3;
+          padding: 10px;
+          overflow: auto;
+      }
+  </style>
+</head>
+<body>
+
+<!-- HTMX partial render target -->
+<div id="queue-data-container" hx-get="{% url 'vod:queue' %}" hx-trigger="load"
+     hx-target="#queue-data-container" hx-swap="innerHTML">
+  {% include "vidra/_queue_data.html" %}
+</div>
+
+<!-- Optional manual refresh -->
+<button
+    hx-get="{% url 'vod:queue' %}"
+    hx-target="#queue-data-container"
+    hx-swap="innerHTML"
+    style="margin-top:20px;"
+>
+  🔁 Refresh Queue Data
+</button>
+
+</body>
+</html>

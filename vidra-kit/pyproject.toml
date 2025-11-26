@@ -1,0 +1,46 @@
+[project]
+name = "vidra-kit"
+version = "0.1.1"
+description = "A modular Python package for video encoding, transcoding (MP4/TS), and DASH packaging."
+readme = "README.md"
+authors = [{ name = "rok", email = "rok.kambic@mx.si" }]
+requires-python = ">=3.8"
+dependencies = [
+    # "av>=12.3.0",
+    "celery>=5.5.3",
+    "click>=8.1.8",
+    "fabric>=3.0.1",
+    "imageio>=2.35.1",
+    "imageio-ffmpeg>=0.5.1",
+    "loguru>=0.7.3",
+    "moviepy>=1.0.3",
+    "pillow>=10.4.0",
+    "psycopg2-binary>=2.9.10",
+    "requests>=2.32.4",
+    "rich>=13.0.0",
+    "sqlalchemy>=2.0.43",
+    "typer>=0.19.2",
+]
+
+[project.scripts]
+vidra-kit = "vidra_kit.cli:app"
+vidra-ping = "vidra_kit.vidra.vydra_ping:main"
+vidra-thumbs = "vidra_kit.thumbnails.__main__:main"
+video-tool = "vidra_kit.video.__main__:main"
+[build-system]
+requires = ["uv_build>=0.8.18,<0.9.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    # Add any dev dependencies here, e.g.
+    "pytest",
+    "black",
+    "celery-types>=0.18.0",
+]
+
+[[tool.uv.index]]
+name = "gitlab"
+url = "https://gitlab.telekom.si/api/v4/projects/3447/packages/pypi/simple"
+publish-url = "https://gitlab.telekom.si/api/v4/projects/3447/packages/pypi"
+explicit = true

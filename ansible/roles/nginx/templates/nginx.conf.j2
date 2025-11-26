@@ -1,0 +1,93 @@
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+
+# Modules you loaded remain
+# load_module "/usr/lib/nginx/modules/ngx_http_fancyindex_module.so";
+# load_module /usr/lib/nginx/modules/ngx_http_dav_ext_module.so;
+# Setup for 4GB RAM servers
+
+events {
+    worker_connections 8192;
+    multi_accept on;
+}
+
+# Allow enough open files
+worker_rlimit_nofile 50000;
+
+http {
+    ##############
+    # Core Performance
+    ##############
+    sendfile on;
+    aio threads;
+    tcp_nopush on;
+    tcp_nodelay on;
+
+    keepalive_timeout 30;
+    keepalive_requests 1000;
+
+    server_tokens off;
+
+    client_max_body_size 5800M;
+
+    ##############
+    # Proxy Tuning
+    ##############
+    proxy_connect_timeout 60;
+    proxy_send_timeout 120;
+    proxy_read_timeout 120;
+
+    proxy_buffering on;
+    proxy_buffers 16 8k;
+    proxy_buffer_size 8k;
+    proxy_busy_buffers_size 64k;
+
+    proxy_temp_file_write_size 64k;
+
+    ##############
+    # Cache opened files
+    ##############
+    open_file_cache max=100000 inactive=30s;
+    open_file_cache_valid 60s;
+    open_file_cache_min_uses 2;
+    open_file_cache_errors on;
+
+    ##############
+    # Gzip Compression
+    ##############
+    gzip on;
+    gzip_disable "msie6";
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 4;  # Ideal CPU level for 4 cores
+    gzip_min_length 1024;
+
+    gzip_types
+        text/plain
+        text/css
+        application/json
+        application/javascript
+        text/xml
+        application/xml
+        application/xml+rss
+        text/javascript;
+
+    ##############
+    # MIME & Logs
+    ##############
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    log_format compression '$remote_addr - $remote_user [$time_local] '
+                           '"$request" $status $body_bytes_sent '
+                           '"$http_referer" "$http_user_agent" "$gzip_ratio"';
+    ##############
+    # Include vhosts
+    ##############
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
+}

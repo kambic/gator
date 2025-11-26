@@ -1,0 +1,66 @@
+---
+
+- name: Install Celery in virtualenv
+  pip:
+    name:
+      - celery[redis]
+      - redis
+    virtualenv: "{{ app_path }}/venv"
+  become_user: "{{ deploy_user }}"
+
+# --- Deploy per-queue workers ---
+- name: Deploy Celery worker units (per queue)
+  template:
+    src: celery-worker@.service.j2
+    dest: "/etc/systemd/system/celery-cms@{{ item.key }}.service"
+    mode: "0644"
+  loop: "{{ celery_queues | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  become: yes
+  notify:
+    - reload systemd
+    - restart celery worker
+
+- name: Deploy Celery target (groups all workers)
+  template:
+    src: celery-cms.target.j2
+    dest: /etc/systemd/system/celery-cms.target
+    mode: "0644"
+  become: yes
+  notify: reload systemd
+
+# --- Celery Beat (Scheduler) ---
+- name: Deploy Celery beat service
+  template:
+    src: celerybeat.service.j2
+    dest: /etc/systemd/system/celerybeat-cms.service
+    mode: "0644"
+  become: yes
+  notify:
+    - reload systemd
+    - restart celerybeat
+
+# --- Enable & Start ---
+- name: Enable Celery target
+  systemd:
+    name: celery-cms.target
+    enabled: yes
+  become: yes
+
+- name: Enable and start per-queue workers
+  systemd:
+    name: "celery-cms@{{ item.key }}.service"
+    enabled: yes
+    state: started
+  loop: "{{ celery_queues | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  become: yes
+
+- name: Enable and start Celery beat
+  systemd:
+    name: celerybeat-cms
+    enabled: yes
+    state: started
+  become: yes

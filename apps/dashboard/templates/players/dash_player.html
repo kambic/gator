@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <div x-data="dashPlayer()">
+    <h3 class="mb-4">🎞️ Dash.js Player with Subtitles & Chart</h3>
+
+    <div class="row mb-3">
+      <div class="col-12">
+        <div class="input-group">
+          <input x-model="manifest" type="url" id="video-url" class="form-control" placeholder="Enter DASH or HLS URL"/>
+          <button x-on:click="loadStream()" type="button" id="load-btn" class="btn btn-primary">Load & Play</button>
+        </div>
+      </div>
+    </div>
+
+    <video x-ref="video" controls class="mb-3 shadow rounded border"></video>
+
+    <div class="row g-3 mb-3">
+      <div class="col-md-6">
+        <label class="form-label">Video Quality</label>
+        <select class="form-select" @change="changeQuality($event.target.value)">
+          <option value="auto">Auto</option>
+          <template x-for="(rep, i) in videoRepList" :key="i">
+            <option :value="i" x-text="rep.height + 'p (' + Math.round(rep.bitrate / 1000) + ' kbps)'"></option>
+          </template>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Subtitles</label>
+        <select class="form-select" @change="changeSubtitle($event.target.value)">
+          <option value="">Off</option>
+          <template x-for="(track, i) in subtitleTracks" :key="i">
+            <option :value="i" x-text="track.label || track.language"></option>
+          </template>
+        </select>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <label class="form-label">Upload Subtitle (.vtt)</label>
+      <input type="file" accept=".vtt" class="form-control" @change="handleSubtitleUpload($event)">
+    </div>
+
+    <canvas x-ref="bufferChart"></canvas>
+  </div>
+
+
+  <!-- Dash.js player -->
+
+{% endblock %}

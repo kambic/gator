@@ -1,0 +1,12 @@
+vidra:
+  hosts:
+    bpl-vidra-02.ts.telekom.si:
+      http_port: 80
+      debug: true
+      django_vite_dev_mode: true
+      database_url: "postgres://vidra:vidra@localhost:5432/alligator"
+      allowed_hosts: "bpl-vidra-02.ts.telekom.si"
+      frontend_host: "http://bpl-vidra-02.ts.telekom.si"
+      redis_url: "redis://localhost:6379/0"
+      server_email: 'Alligator <bpl-vidra-03@telekom.si>'
+      git_token: 'glpat-FULYk_jXZdC2oTKk6ILjYm86MQp1Om5oCA.01.0y04w28fq'

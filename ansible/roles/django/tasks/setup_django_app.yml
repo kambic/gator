@@ -1,0 +1,23 @@
+---
+
+- name: Set environment variables
+  tags : deploy
+  template:
+    src: env.j2
+    dest: "{{ app_path }}/.env"
+    mode: "0600"
+
+- name: Run Django migrations
+  tags : deploy
+  django_manage:
+    command: migrate
+    app_path: "{{ app_path }}"
+    virtualenv: "{{ venv_path }}"
+
+- name: Collect static files
+  tags : deploy
+  django_manage:
+    command: collectstatic
+    app_path: "{{ app_path }}"
+    virtualenv: "{{ venv_path }}"
+    settings: config.settings.production

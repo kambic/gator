@@ -1,0 +1,339 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="row">
+
+    <div x-data="NewTaskManagerOld()" x-init="init()" class="container my-3">
+      <legend>Media details</legend>
+
+      <!-- Controls -->
+      <div class="d-flex justify-content-between mb-3">
+        <div>
+          <button @click="toggleExpand()" class="btn btn-primary">Toggle Expand</button>
+          <button @click="deselectAll()" class="btn btn-secondary">Deselect all</button>
+        </div>
+        <button @click="enqueue()" class="btn btn-success">Enqueue for Vidra</button>
+      </div>
+
+      <!-- Picker -->
+      <div id="picker" class="mb-3"></div>
+
+      <!-- Alpine-controlled accordion -->
+      <div x-data="{ open: false }" class="accordion my-2">
+        <div class="accordion-item">
+          <h4 class="accordion-header">
+            <button type="button" class="accordion-button" :class="{ 'collapsed': !open }" @click="open = !open">
+              View Payload
+            </button>
+          </h4>
+          <div class="accordion-collapse" x-show="open" x-transition>
+            <div class="accordion-body">
+              <div id="jsoneditor"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  {% comment %}
+    <div class="row">
+      <div class="mb-3">
+        <div class="row">
+          <div id="" class="col-2">
+            <label for="id_content_type" class="form-label requiredField">Content type<span
+                class="asteriskField">*</span></label>
+            <select name="content_type" class="select form-select" id="id_content_type">
+              <option value="dkino" selected="">DKINO</option>
+              <option value="dmd">DajMeDol</option>
+              <option value="misc">OSTALO</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="id_drm" checked/>
+              <label class="form-check-label" for="id_drm">DRM</label>
+            </div>
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="id_streaming"/>
+              <label class="form-check-label" for="id_streaming">Streaming</label>
+            </div>
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="id_debug"/>
+              <label class="form-check-label" for="id_debug">DEBUG</label>
+            </div>
+          </div>
+
+          <div class="col-md"></div>
+        </div>
+
+        <div class="d-flex justify-content-between my-3">
+          <div class="bd-example m-0 border-0">
+            <button id="btnToggleExpand" type="button" class="btn btn-primary">Toggle Expand</button>
+            <button id="btnDeselect" type="button" class="btn btn-secondary">Deselect all</button>
+          </div>
+          <div class="bd-example m-0 border-0">
+            <button id="btnQueue" type="button" class="btn btn-primary">Enqueue for vidra</button>
+          </div>
+        </div>
+        <div id="picker"></div>
+        <!-- accordion -->
+
+        <div class="accordion my-2">
+          <div class="accordion-item">
+            <h4 class="accordion-header">
+              <button class="accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapse-jse">View Payload
+              </button>
+            </h4>
+            <div id="collapse-jse" class="accordion-collapse collapse" data-bs-parent="#accordionPayload">
+              <div class="accordion-body">
+                <div id="jsoneditor"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- /.accordion -->
+      </div>
+    </div>
+
+  {% endcomment %}
+{% endblock %}
+
+{% block inline_javascript_off %}
+  <script>
+      $(function () {
+          const app = {
+              // DOM elements
+              elements: {
+                  container: document.getElementById('jsoneditor'),
+                  btnToggleEx: $('#btnToggleExpand'),
+                  btnDeselect: $('#btnDeselect'),
+                  btnQueue: $('#btnQueue'),
+                  contentType: $('#id_content_type'),
+                  picker: $('#picker')
+              },
+
+              // Editor configuration
+              editorConfig: {
+                  options: {mode: 'view'},
+                  init() {
+                      this.editor = new JSONEditor(app.elements.container, this.options)
+                  }
+              },
+
+              // State
+              state: {
+                  payloads: []
+              },
+
+              // Event handlers
+              handlers: {
+                  checkboxChange() {
+                      const selNodes = app.elements.picker.fancytree('getTree').getSelectedNodes()
+                      app.functions.buildPayload(selNodes)
+                  },
+
+                  contentTypeChange() {
+                      console.log('Selected value:', app.elements.contentType.val())
+                      const selNodes = app.elements.picker.fancytree('getTree').getSelectedNodes()
+                      app.functions.buildPayload(selNodes)
+                  },
+
+                  deselectNode() {
+                      app.elements.picker.fancytree('getTree').visit((node) => {
+                          node.setSelected(false)
+                      })
+                  },
+
+                  queueClick() {
+                      showModal('Confirm New job', `<p>Are you sure you want to enqueue <strong>${app.state.payloads.length} task </strong></p>`, [
+                          {
+                              text: 'Enqueue',
+                              class: 'btn btn-primary',
+                              onClick: () => {
+                                  console.log('File deleted!')
+                                  app.functions.enqueue()
+                              },
+                              dismiss: true
+                          }
+                      ])
+                  }
+              },
+
+              // Fancytree configuration
+              fancytreeConfig: {
+                  init() {
+                      app.elements.picker.fancytree({
+                          extensions: ['filter'],
+                          source: {
+                              url: '{% url "vod:fancytree" %}',
+                              data: {node: '#'}
+                          },
+                          lazyLoad(event, data) {
+                              data.result = {
+                                  url: '{% url "vod:fancytree" %}',
+                                  data: {node: data.node.key}
+                              }
+                          },
+                          checkbox(event, data) {
+                              return data.node.isFolder()
+                          },
+                          tooltip(event, data) {
+                              return data.node.title + ' (' + data.node.key + ')'
+                          },
+                          activate(event, data) {
+                              const node = data.node
+                              node.setSelected(!node.isSelected())
+                          },
+                          select(event, data) {
+                              const selNodes = data.tree.getSelectedNodes()
+                              app.functions.buildPayload(selNodes)
+                          }
+                      })
+                  }
+              },
+
+              // Utility functions
+              functions: {
+                  getSelectedValue(selectId) {
+                      const select = document.getElementById(selectId)
+                      return select.value
+                  },
+
+                  getFileExtension(filename) {
+                      const parts = filename.split('.')
+                      return parts.length > 1 ? parts.pop().toLowerCase() : ''
+                  },
+
+                  setVidraPath(node) {
+                      return {
+                          type: 'local',
+                          info: node.key.replace('/export/isilj/', 'isilon-lj-local:')
+                      }
+                  },
+
+                  filterVideo(node) {
+                      return app.functions.getFileExtension(node.title) === 'mp4'
+                  },
+
+                  filterSubtitle(node) {
+                      return ['srt', 'vtt'].includes(app.functions.getFileExtension(node.title))
+                  },
+
+                  createFolderPayload(folderNode, files) {
+                      return {
+                          name: folderNode.title,
+                          profiles: $('#id_streaming').prop('checked') ? ['adaptive_hd', 'streaming_hd', 'streaming'] : ['adaptive_hd'],
+                          video: files.filter(this.filterVideo).map(this.setVidraPath).pop(),
+                          subtitles: files.filter(this.filterSubtitle).map(this.setVidraPath).pop(),
+                          audio: null,
+                          adaptive_dest: 'edgeware',
+                          drm_required: $('#id_drm').prop('checked'),
+                          seconds: $('#id_debug').prop('checked') ? 30 : null,
+                          content_id: null,
+                          ott_realm: app.elements.contentType.val()
+                      }
+                  },
+
+                  async getAllFilesInFolder(folderNode) {
+                      return new Promise((resolve) => {
+                          if (!folderNode.folder) {
+                              resolve([])
+                              return
+                          }
+
+                          folderNode.load().done(() => {
+                              let files = []
+                              let childPromises = []
+
+                              folderNode.children.forEach((child) => {
+                                  if (child.folder) {
+                                      let subPromise = this.getAllFilesInFolder(child).then((subFiles) => {
+                                          files = files.concat(subFiles)
+                                      })
+                                      childPromises.push(subPromise)
+                                  } else {
+                                      files.push(child)
+                                  }
+                              })
+
+                              Promise.all(childPromises).then(() => {
+                                  resolve(files)
+                              })
+                          })
+                      })
+                  },
+
+                  async buildPayload(selNodes) {
+                      console.log('building payload')
+                      try {
+                          const taskPayloads = await Promise.all(
+                              selNodes.map(async (node) => {
+                                  const files = await this.getAllFilesInFolder(node)
+                                  const payload = this.createFolderPayload(node, files)
+                                  console.log(payload)
+                                  return payload
+                              })
+                          )
+
+                          app.editorConfig.editor.set(taskPayloads)
+                          app.editorConfig.editor.expandAll()
+                          app.state.payloads = taskPayloads
+                      } catch (err) {
+                          console.error('Error generating payloads:', err)
+                      }
+                  },
+
+                  enqueue() {
+                      overlay.show('Fetching data...')
+                      const url = '{% url "dashboard:job_create_api" %}'
+                      fetch(url, {
+                          method: 'POST',
+                          headers: {
+                              'Content-Type': 'application/json',
+                              'X-CSRFToken': csrftoken
+                          },
+                          body: JSON.stringify(app.state.payloads)
+                      })
+                          .then((res) => res.json())
+                          .then(app.functions.successCreated)
+                          .catch((err) => console.error(err))
+                  },
+
+                  successCreated(data) {
+                      overlay.hide()
+                      showToast(`Success: ${data.id}`)
+
+                      data.forEach((e) => {
+                          showToast(e.id)
+                          app.elements.picker.fancytree('getTree').visit((node) => {
+                              node.setSelected(false)
+                          })
+                      })
+                  }
+              },
+
+              // Initialize application
+              init() {
+                  this.editorConfig.init()
+                  this.fancytreeConfig.init()
+
+                  // Bind event handlers
+                  $('input[type=checkbox]').on('change', this.handlers.checkboxChange)
+                  this.elements.contentType.on('change', this.handlers.contentTypeChange)
+                  this.elements.btnDeselect.on('click', this.handlers.deselectNode)
+                  this.elements.btnQueue.on('click', this.handlers.queueClick)
+              }
+          }
+
+          // Start the application
+          app.init()
+      })
+  </script>
+{% endblock %}

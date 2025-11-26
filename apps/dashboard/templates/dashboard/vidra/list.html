@@ -1,0 +1,55 @@
+{% extends 'layout.html' %}
+
+{% load static %}
+
+{% block extra_css %}
+
+
+  <style>
+
+      #dt-table thead tr:nth-child(2) th {
+          pointer-events: none;
+      }
+
+      #dt-table thead tr:nth-child(2) th input,
+      #dt-table thead tr:nth-child(2) th select {
+          pointer-events: auto;
+      }
+
+
+  </style>
+
+{% endblock %}
+
+
+{% block content %}
+
+  <button id="resetFilters" class="btn btn-secondary mb-2">Reset Filters</button>
+
+  <table id="dt-table"
+         class="display nowrap table table-striped table-bordered table-hover"
+         data-api-url="" width="100%">
+    <thead>
+    <tr>
+      <th>Created</th>
+      <th>Name</th>
+      <th>UUID</th>
+      <th>Hostname</th>
+      <th>Runtime</th>
+      <th>Env</th>
+      <th>State</th>
+    </tr>
+    </thead>
+    <tfoot>
+    <tr>
+      <th>Created</th>
+      <th>Name</th>
+      <th>UUID</th>
+      <th>Hostname</th>
+      <th>Runtime</th>
+      <th>Env</th>
+      <th>State</th>
+    </tr>
+    </tfoot>
+  </table>
+{% endblock %}

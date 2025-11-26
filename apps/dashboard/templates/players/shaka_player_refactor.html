@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Shaka Player — Object Literal Refactor</title>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; padding:20px; }
+    .player-wrap { max-width:960px; margin:0 auto; }
+    video { width:100%; background:#000; }
+    .controls { display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; }
+    .controls label { font-size:13px; }
+    select, button, input[type=range] { padding:6px 8px; }
+  </style>
+</head>
+<body>
+  <div class="player-wrap">
+    <h2>Shaka Player — Object Literal Refactor</h2>
+
+    <video id="video" controls playsinline></video>
+
+    <div class="controls">
+      <label>Captions:
+        <select id="captionSelect"><option value="off">Off</option></select>
+      </label>
+      <label>Resolution:
+        <select id="resolutionSelect"><option value="auto">Auto (ABR)</option></select>
+      </label>
+      <label>Audio language:
+        <select id="audioLangSelect"><option value="auto">Auto</option></select>
+      </label>
+      <label>Speed:
+        <select id="speedSelect">
+          <option>0.5</option><option>0.75</option><option selected>1</option><option>1.25</option><option>1.5</option><option>2</option>
+        </select>
+      </label>
+      <button id="reloadBtn">Reload manifest</button>
+    </div>
+
+    <p style="margin-top:12px; font-size:13px; color:#555;">Set <code>window.manifestUrl</code> from console or edit in code, then reload.</p>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.6/shaka-player.compiled.js"></script>
+  <script>
+  (function() {
+    'use strict';
+
+    const ShakaApp = {
+      manifestUrl: window.manifestUrl || 'https://storage.googleapis.com/shaka-demo-assets/angel-one/dash.mpd',
+      video: document.getElementById('video'),
+      captionSelect: document.getElementById('captionSelect'),
+      resolutionSelect: document.getElementById('resolutionSelect'),
+      audioLangSelect: document.getElementById('audioLangSelect'),
+      speedSelect: document.getElementById('speedSelect'),
+      reloadBtn: document.getElementById('reloadBtn'),
+      player: null,
+
+      init() {
+        shaka.polyfill.installAll();
+        if (!shaka.Player.isBrowserSupported()) {
+          alert('Browser not supported');
+          return;
+        }
+        this.player = new shaka.Player(this.video);
+        this.player.addEventListener('error', e => console.error('Shaka error', e.detail));
+
+        this.speedSelect.onchange = () => this.video.playbackRate = parseFloat(this.speedSelect.value);
+        this.reloadBtn.onclick = () => this.loadManifest();
+
+        this.loadManifest();
+        window.shakaPlayer = this; // expose for debugging
+      },
+
+      async loadManifest() {
+        try {
+          await this.player.load(this.manifestUrl);
+          console.log('Manifest loaded:', this.manifestUrl);
+          this.populateTextTracks();
+          this.populateResolutions();
+          this.populateAudioLanguages();
+        } catch (err) {
+          console.error('Failed to load manifest', err);
+          alert('Manifest load error — see console.');
+        }
+      },
+
+      uniqueBy(arr, keyFn) {
+        const seen = new Set();
+        return arr.filter(x => {
+          const k = keyFn(x);
+          if (seen.has(k)) return false;
+          seen.add(k);
+          return true;
+        });
+      },
+
+      populateTextTracks() {
+        this.captionSelect.innerHTML = '<option value="off">Off</option>';
+        const tracks = this.player.getTextTracks();
+        if (!tracks.length) {
+          this.captionSelect.innerHTML += '<option disabled>No captions</option>';
+          this.captionSelect.disabled = true;
+          return;
+        }
+        this.captionSelect.disabled = false;
+        tracks.forEach((t, i) => {
+          const opt = document.createElement('option');
+          opt.value = i;
+          opt.textContent = `${t.language || 'und'}${t.label ? ' — ' + t.label : ''}`;
+          this.captionSelect.appendChild(opt);
+        });
+        this.captionSelect.onchange = () => this.selectCaption();
+      },
+
+      selectCaption() {
+        const v = this.captionSelect.value;
+        if (v === 'off') {
+          this.player.setTextTrackVisibility(false);
+          return;
+        }
+        this.player.setTextTrackVisibility(true);
+        const idx = parseInt(v, 10);
+        const selected = this.player.getTextTracks()[idx];
+        if (selected) {
+          try { this.player.selectTextTrack(selected); }
+          catch { this.player.configure({ preferredTextLanguage: selected.language }); }
+        }
+      },
+
+      populateResolutions() {
+        this.resolutionSelect.innerHTML = '<option value="auto">Auto (ABR)</option>';
+        const tracks = this.player.getVariantTracks();
+        if (!tracks.length) {
+          this.resolutionSelect.innerHTML += '<option disabled>No tracks</option>';
+          this.resolutionSelect.disabled = true;
+          return;
+        }
+        const byHeight = this.uniqueBy(tracks.sort((a,b) => (b.height||0)-(a.height||0)), t => t.height || 0);
+        byHeight.forEach(t => {
+          if (!t.height) return;
+          const opt = document.createElement('option');
+          opt.value = t.height;
+          opt.textContent = `${t.height}p — ${Math.round((t.bandwidth||0)/1000)} kbps`;
+          this.resolutionSelect.appendChild(opt);
+        });
+        this.resolutionSelect.onchange = () => this.selectResolution();
+      },
+
+      async selectResolution() {
+        const v = this.resolutionSelect.value;
+        if (v === 'auto') {
+          this.player.configure({ abr: { enabled: true } });
+          return;
+        }
+        this.player.configure({ abr: { enabled: false } });
+        const height = parseInt(v, 10);
+        const candidates = this.player.getVariantTracks().filter(t => t.height === height);
+        if (candidates.length) {
+          const pick = candidates.reduce((a,b) => (a.bandwidth||0) > (b.bandwidth||0) ? a : b);
+          try {
+            await this.player.selectVariantTrack(pick, true);
+          } catch (e) {
+            console.warn('selectVariantTrack failed', e);
+          }
+        }
+      },
+
+      populateAudioLanguages() {
+        this.audioLangSelect.innerHTML = '<option value="auto">Auto</option>';
+        const variants = this.player.getVariantTracks();
+        const langs = this.uniqueBy(variants, v => v.language || 'und');
+        langs.forEach(v => {
+          const opt = document.createElement('option');
+          opt.value = v.language || 'und';
+          opt.textContent = v.language || 'und';
+          this.audioLangSelect.appendChild(opt);
+        });
+        this.audioLangSelect.onchange = () => this.selectAudioLanguage();
+      },
+
+      selectAudioLanguage() {
+        const v = this.audioLangSelect.value;
+        if (v === 'auto') {
+          this.player.configure({ preferredAudioLanguage: '' });
+          this.player.configure({ abr: { enabled: true } });
+        } else {
+          this.player.configure({ preferredAudioLanguage: v });
+        }
+      }
+    };
+
+    ShakaApp.init();
+  })();
+  </script>
+</body>
+</html>

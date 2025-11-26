@@ -1,0 +1,47 @@
+{% extends "vod/base.html" %}
+{% load django_vite %}
+
+{% block title %}Video Player{% endblock %}
+
+{% block content %}
+  <div class="min-h-screen bg-black flex flex-col">
+  <!-- Video Player -->
+    <div class="relative w-full flex-1">
+      <video
+        id="my-video"
+        class="video-js vjs-theme-forest w-full h-full"
+        controls
+        preload="auto"
+        poster="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1920&h=1080&fit=crop"
+        data-setup='{}'
+      >
+      <!-- Example HLS stream (replace with your own .m3u8) -->
+        <source src="https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8" type="application/x-mpegURL" label="Auto" />
+
+      <!-- Multiple quality sources (optional) -->
+        <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" label="1080p" res="1080" />
+        <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" type="video/mp4" label="720p" res="720" />
+
+        <p class="vjs-no-js">
+          To view this video please enable JavaScript, and consider upgrading to a
+          <a href="https://videojs.com/html5-video-support/" target="_blank">web browser that supports HTML5 video</a>
+        </p>
+      </video>
+    </div>
+
+  <!-- Video Info (optional) -->
+    <div class="bg-gray-900 border-t border-gray-800 p-6">
+      <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-bold text-white mb-2">Big Buck Bunny</h1>
+        <p class="text-gray-400">
+          A large and lovable rabbit deals with three rodents who are always trying to cause trouble.
+        </p>
+        <div class="flex gap-4 mt-4 text-sm text-gray-500">
+          <span>2008</span>
+          <span>Animation</span>
+          <span>10 min</span>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

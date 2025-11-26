@@ -1,0 +1,150 @@
+{% extends "core/base.html" %}
+{% block title %}File Explorer{% endblock %}
+
+{% block content %}
+<section id="files" class="card bg-base-100 shadow-xl p-6"
+         x-data="fileManager()" x-init="loadFiles('')">
+
+    <h2 class="card-title mb-4">🗂 File Browser</h2>
+
+    <!-- File Tree -->
+    <ul class="menu tree border border-base-300 rounded p-2 space-y-1">
+        <template x-for="item in files" :key="item.path">
+            <li>
+                <div class="flex items-center justify-between cursor-pointer"
+                     @click="item.is_dir ? toggleFolder(item) : null">
+
+                    <span x-text="item.name"
+                          :class="{'font-bold': item.is_dir}"></span>
+
+                    <div class="space-x-2">
+                        <button class="btn btn-xs btn-ghost text-red-500"
+                                @click.stop="deleteFile(item)">🗑️</button>
+                        <span x-show="item.is_dir" x-text="item.expanded ? '📂' : '📁'"></span>
+                    </div>
+                </div>
+
+                <!-- Nested children -->
+                <ul x-show="item.expanded" x-transition class="pl-4 mt-1 space-y-1">
+                    <template x-for="child in item.children" :key="child.path">
+                        <li>
+                            <div class="flex items-center justify-between cursor-pointer"
+                                 @click="child.is_dir ? toggleFolder(child) : null">
+                                <span x-text="child.name"
+                                      :class="{'font-bold': child.is_dir}"></span>
+                                <div class="space-x-2">
+                                    <button class="btn btn-xs btn-ghost text-red-500"
+                                            @click.stop="deleteFile(child)">🗑️</button>
+                                    <span x-show="child.is_dir" x-text="child.expanded ? '📂' : '📁'"></span>
+                                </div>
+                            </div>
+                            <!-- Recursive -->
+                            <ul x-show="child.expanded" x-transition class="pl-4 mt-1 space-y-1">
+                                <template x-for="grand in child.children" :key="grand.path">
+                                    <li>
+                                        <div class="flex justify-between items-center">
+                                            <span x-text="grand.name"></span>
+                                            <button class="btn btn-xs btn-ghost text-red-500"
+                                                    @click.stop="deleteFile(grand)">🗑️</button>
+                                        </div>
+                                    </li>
+                                </template>
+                            </ul>
+                        </li>
+                    </template>
+                </ul>
+            </li>
+        </template>
+    </ul>
+
+    <!-- Upload -->
+    <div class="mt-4 flex items-center space-x-2">
+        <input type="file" x-ref="uploadFile" class="input input-bordered" />
+        <button class="btn btn-primary" @click="uploadFile()">Upload</button>
+    </div>
+</section>
+
+<script>
+function fileManager() {
+    const API_URL = '{% url 'core:file_api' %}'; // <-- centralized API endpoint
+
+    return {
+        files: [],
+
+        loadFiles(path='') {
+            fetch(`${API_URL}?path=${encodeURIComponent(path)}`)
+                .then(res => res.json())
+                .then(data => {
+                    this.files = data.map(i => ({...i, expanded:false, children: []}));
+                })
+                .catch(e => console.error('Failed to load files', e));
+        },
+
+        toggleFolder(item) {
+            if (!item.expanded) {
+                // Load children
+                fetch(`${API_URL}?path=${encodeURIComponent(item.path)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        item.children = data.map(i => ({...i, expanded:false, children: []}));
+                        item.expanded = true;
+                    })
+                    .catch(e => console.error('Failed to load folder', e));
+            } else {
+                item.expanded = false;
+            }
+        },
+
+        uploadFile() {
+            const fileInput = this.$refs.uploadFile;
+            if (!fileInput.files.length) return alert("Select a file!");
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            fetch(API_URL, { method: 'POST', body: formData })
+                .then(res => {
+                    if(res.ok) {
+                        toast("File uploaded!", "success");
+                        this.loadFiles('');
+                        fileInput.value = '';
+                    } else {
+                        toast("Upload failed!", "error");
+                    }
+                })
+                .catch(e => console.error(e));
+        },
+
+        deleteFile(item) {
+            if (!confirm(`Delete ${item.name}?`)) return;
+
+            fetch(API_URL, {
+                method: 'DELETE',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({path: item.path})
+            })
+            .then(res => {
+                if(res.ok) {
+                    toast("Deleted!", "success");
+                    this.loadFiles('');
+                } else {
+                    toast("Delete failed!", "error");
+                }
+            })
+            .catch(e => console.error(e));
+        }
+    };
+}
+
+// Simple Toast
+function toast(msg, type="info") {
+    const div = document.createElement("div");
+    div.className = `alert alert-${type} mb-2 shadow-lg`;
+    div.textContent = msg;
+    document.body.appendChild(div);
+    setTimeout(()=>div.remove(), 3000);
+}
+</script>
+
+
+{% endblock %}

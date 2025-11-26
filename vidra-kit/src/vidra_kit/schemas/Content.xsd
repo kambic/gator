@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+    <xs:import namespace="" schemaLocation="Types.xsd"/>
+
+    <xs:complexType name="ContentType">
+        <xs:sequence>
+            <xs:element name="Content_URI" type="xs:anyURI"/>
+            <xs:element name="Content_FileSize" type="xs:long" minOccurs="0"/>
+            <xs:element name="Content_CheckSum" type="xs:string" minOccurs="0"/>
+            <xs:element name="Type" type="ContentTypeEnum" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

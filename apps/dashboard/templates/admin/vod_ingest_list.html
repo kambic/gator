@@ -1,0 +1,43 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls %}
+
+{% block content %}
+<div id="content-main">
+    <div class="module">
+        <h2>ZIP Files in: {{ path }}</h2>
+
+        <table id="result_list">
+            <thead>
+                <tr>
+                    <th>{% translate 'File Name' %}</th>
+                    <th>{% translate 'Size (bytes)' %}</th>
+                    <th>{% translate 'Last Modified' %}</th>
+                    <th>{% translate 'Action' %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in file_list %}
+                <tr class="{% cycle 'row1' 'row2' %}">
+                    <td>{{ file.name }}</td>
+                    <td>{{ file.size|default_if_none:"N/A" }}</td>
+                    <td>{{ file.modified|date:"Y-m-d H:i:s"|default_if_none:"N/A" }}</td>
+                    <td>
+                        <form method="post" action="{% url 'admin:vod_ingest_start' %}" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="file_path" value="{{ file.path }}">
+                            <button type="submit" class="button">
+                                Start Ingest
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No ZIP files found in {{ path }}.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

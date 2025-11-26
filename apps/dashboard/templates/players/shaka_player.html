@@ -1,0 +1,433 @@
+{% extends 'base.html' %}
+
+{% block css %}
+  <style>
+      #video-container {
+          background-color: black;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 60vh;
+          position: relative;
+      }
+
+      #debug-panel {
+          background: #212529;
+          color: #28a745;
+          font-family: 'Courier New', Courier, monospace;
+          font-size: 0.875rem;
+          max-height: 40vh;
+          overflow-y: auto;
+          padding: 1rem;
+      }
+
+      .metrics-section {
+          margin-bottom: 1rem;
+      }
+
+      .metrics-section h6 {
+          color: #28a745;
+          margin-bottom: 0.5rem;
+      }
+
+      .metric-item {
+          display: flex;
+          justify-content: space-between;
+          padding: 0.25rem 0;
+      }
+
+      .metric-label {
+          font-weight: bold;
+      }
+
+      .metric-value {
+          color: #28a745;
+      }
+
+      #switch-history {
+          max-height: 150px;
+          overflow-y: auto;
+      }
+
+      .loading {
+          display: none;
+      }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid py-4">
+    <div class="row mb-3">
+      <div class="col-12">
+        <div class="input-group">
+          <select id="url-select" class="form-select" style="max-width: 200px;">
+            <option value="">Custom URL</option>
+            <option value="https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd">Big Buck Bunny (DASH)</option>
+            <option value="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8">Big Buck Bunny (HLS)</option>
+          </select>
+          <input type="url" id="video-url" class="form-control" placeholder="Enter DASH or HLS URL"/>
+          <button type="button" id="load-btn" class="btn btn-primary">Load & Play</button>
+          <button type="button" id="clear-btn" class="btn btn-secondary">Clear</button>
+          <button type="button" id="test-btn" class="btn btn-info">Test Metrics</button>
+          <button type="button" id="abr-btn" class="btn btn-purple">Toggle ABR</button>
+          <button type="button" id="quality-up-btn" class="btn btn-success">Quality Up</button>
+          <button type="button" id="quality-down-btn" class="btn btn-success">Quality Down</button>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 p-0">
+        <div id="video-container">
+          <div id="loading-spinner" class="spinner-border text-light loading" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <video id="video" class="w-100" controls autoplay muted style="display: none;"></video>
+        </div>
+      </div>
+      <div class="col-12" id="debug-panel">
+        <strong class="text-success">Debug & Test Metrics</strong>
+        <div id="error-alert" class="alert alert-danger mt-2" style="display: none;"></div>
+        <div id="metrics-content" class="mt-2">
+          <div class="metrics-section">
+            <h6>Basic Status</h6>
+            <div class="metric-item">
+              <span class="metric-label">State:</span>
+              <span class="metric-value" id="state">IDLE</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Buffered (s):</span>
+              <span class="metric-value" id="buffered">0.00</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Current Time (s):</span>
+              <span class="metric-value" id="current-time">0.00</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Duration (s):</span>
+              <span class="metric-value" id="duration">0.00</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Playback Rate:</span>
+              <span class="metric-value" id="playback-rate">1.0</span>
+            </div>
+          </div>
+          <div class="metrics-section">
+            <h6>Performance Metrics</h6>
+            <div class="metric-item">
+              <span class="metric-label">Dropped Frames:</span>
+              <span class="metric-value" id="dropped-frames">0</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Decoded Frames:</span>
+              <span class="metric-value" id="decoded-frames">0</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Estimated FPS:</span>
+              <span class="metric-value" id="fps">0</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Stalls Detected:</span>
+              <span class="metric-value" id="stalls">0</span>
+            </div>
+          </div>
+          <div class="metrics-section">
+            <h6>Streaming Stats</h6>
+            <div class="metric-item">
+              <span class="metric-label">Estimated Bandwidth (bps):</span>
+              <span class="metric-value" id="bandwidth">0</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Play Time (s):</span>
+              <span class="metric-value" id="play-time">0</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Load Latency (ms):</span>
+              <span class="metric-value" id="load-latency">0</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Current Resolution:</span>
+              <span class="metric-value" id="resolution">N/A</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Current Bitrate (kbps):</span>
+              <span class="metric-value" id="bitrate">0</span>
+            </div>
+          </div>
+          <div class="metrics-section">
+            <h6>Switch History</h6>
+            <div id="switch-history" class="table-responsive">
+              <table class="table table-dark table-sm">
+                <thead>
+                <tr>
+                  <th>Time (s)</th>
+                  <th>Type</th>
+                  <th>ID</th>
+                  <th>Width</th>
+                  <th>Height</th>
+                  <th>Bandwidth (bps)</th>
+                </tr>
+                </thead>
+                <tbody id="switch-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="metrics-section">
+            <h6>Test Results</h6>
+            <div class="metric-item">
+              <span class="metric-label">Network Speed Test:</span>
+              <span class="metric-value" id="network-speed">Not run</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-label">Buffer Health:</span>
+              <span class="metric-value" id="buffer-health">N/A</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block inline_javascript %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.9.3/shaka-player.compiled.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+          crossorigin="anonymous"></script>
+  <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const video = document.getElementById('video');
+          const player = new shaka.Player(video);
+          const urlSelect = document.getElementById('url-select');
+          const videoUrlInput = document.getElementById('video-url');
+          const loadBtn = document.getElementById('load-btn');
+          const clearBtn = document.getElementById('clear-btn');
+          const testBtn = document.getElementById('test-btn');
+          const abrBtn = document.getElementById('abr-btn');
+          const qualityUpBtn = document.getElementById('quality-up-btn');
+          const qualityDownBtn = document.getElementById('quality-down-btn');
+          const errorAlert = document.getElementById('error-alert');
+          const loadingSpinner = document.getElementById('loading-spinner');
+
+          let fpsCounter = {frames: 0, lastTime: performance.now(), fps: 0};
+          let stallCounter = 0;
+
+          // Shaka Player configuration
+          player.configure({
+              abr: {enabled: true},
+              streaming: {bufferingGoal: 60, rebufferingGoal: 2}
+          });
+
+          // Error handlers
+          player.addEventListener('error', (event) => {
+              console.error('Shaka Player Error:', event.detail);
+              showError(`Shaka Player Error: ${event.detail.message}`);
+          });
+
+          video.addEventListener('error', (event) => {
+              console.error('Video Element Error:', event);
+              showError(`Video Element Error: ${event.message}`);
+          });
+
+          // Stall detection
+          video.addEventListener('waiting', () => {
+              stallCounter++;
+              updateMetric('stalls', stallCounter);
+          });
+
+          // FPS calculation
+          function calculateFPS() {
+              const now = performance.now();
+              fpsCounter.frames++;
+              if (now - fpsCounter.lastTime >= 1000) {
+                  fpsCounter.fps = Math.round((fpsCounter.frames * 1000) / (now - fpsCounter.lastTime));
+                  fpsCounter.frames = 0;
+                  fpsCounter.lastTime = now;
+                  updateMetric('fps', fpsCounter.fps);
+              }
+          }
+
+          // FPS loop
+          function fpsLoop() {
+              calculateFPS();
+              requestAnimationFrame(fpsLoop);
+          }
+
+          fpsLoop();
+
+          // Form and button handlers
+          urlSelect.addEventListener('change', () => {
+              videoUrlInput.value = urlSelect.value;
+          });
+
+          loadBtn.addEventListener('click', async () => {
+              const manifestUri = videoUrlInput.value.trim();
+              if (!manifestUri) {
+                  showError('Please enter a valid URL.');
+                  return;
+              }
+
+              showLoading(true);
+              hideError();
+
+              try {
+                  await player.unload();
+                  await player.load(manifestUri);
+                  video.style.display = 'block';
+                  showLoading(false);
+              } catch (error) {
+                  console.error('Error loading manifest:', error);
+                  showError(`Error loading manifest: ${error.message}`);
+                  showLoading(false);
+              }
+          });
+
+          clearBtn.addEventListener('click', async () => {
+              await player.unload();
+              video.style.display = 'none';
+              video.pause();
+              video.currentTime = 0;
+              stallCounter = 0;
+              fpsCounter = {frames: 0, lastTime: performance.now(), fps: 0};
+              resetMetrics();
+              hideError();
+          });
+
+          testBtn.addEventListener('click', async () => {
+              updateMetric('network-speed', 'Testing...');
+              try {
+                  const startTime = performance.now();
+                  const response = await fetch(`${videoUrlInput.value}/segment1.m4s`, {method: 'HEAD'});
+                  const endTime = performance.now();
+                  const speed = ((response.headers.get('content-length') || 1000000) / (endTime - startTime)) * 1000;
+                  updateMetric('network-speed', (speed / 1000).toFixed(2) + ' Mbps');
+              } catch (e) {
+                  updateMetric('network-speed', `Test failed: ${e.message}`);
+              }
+          });
+
+          abrBtn.addEventListener('click', () => {
+              const abrEnabled = !player.getConfiguration().abr.enabled;
+              player.configure({abr: {enabled: abrEnabled}});
+              showError(`ABR ${abrEnabled ? 'enabled' : 'disabled'}`);
+          });
+
+          qualityUpBtn.addEventListener('click', () => {
+              const tracks = player.getVariantTracks();
+              const activeTrack = tracks.find((track) => track.active);
+              const currentIndex = tracks.indexOf(activeTrack);
+              const nextIndex = Math.min(currentIndex + 1, tracks.length - 1);
+              if (nextIndex !== currentIndex) {
+                  player.selectVariantTrack(tracks[nextIndex], true);
+                  showError(`Switched to ${tracks[nextIndex].width}x${tracks[nextIndex].height}`);
+              }
+          });
+
+          qualityDownBtn.addEventListener('click', () => {
+              const tracks = player.getVariantTracks();
+              const activeTrack = tracks.find((track) => track.active);
+              const currentIndex = tracks.indexOf(activeTrack);
+              const nextIndex = Math.max(currentIndex - 1, 0);
+              if (nextIndex !== currentIndex) {
+                  player.selectVariantTrack(tracks[nextIndex], true);
+                  showError(`Switched to ${tracks[nextIndex].width}x${tracks[nextIndex].height}`);
+              }
+          });
+
+          function showLoading(show) {
+              loadingSpinner.style.display = show ? 'block' : 'none';
+              video.style.display = show ? 'none' : 'block';
+          }
+
+          function showError(message) {
+              errorAlert.textContent = message;
+              errorAlert.style.display = 'block';
+          }
+
+          function hideError() {
+              errorAlert.style.display = 'none';
+          }
+
+          function updateMetric(id, value) {
+              const element = document.getElementById(id);
+              if (element) {
+                  element.textContent = value;
+              }
+          }
+
+          function resetMetrics() {
+              updateMetric('state', 'IDLE');
+              updateMetric('buffered', '0.00');
+              updateMetric('current-time', '0.00');
+              updateMetric('duration', '0.00');
+              updateMetric('playback-rate', '1.0');
+              updateMetric('dropped-frames', '0');
+              updateMetric('decoded-frames', '0');
+              updateMetric('fps', '0');
+              updateMetric('stalls', '0');
+              updateMetric('bandwidth', '0');
+              updateMetric('play-time', '0');
+              updateMetric('load-latency', '0');
+              updateMetric('resolution', 'N/A');
+              updateMetric('bitrate', '0');
+              updateMetric('network-speed', 'Not run');
+              updateMetric('buffer-health', 'N/A');
+              document.getElementById('switch-tbody').innerHTML = '';
+          }
+
+          function updateSwitchHistory(switches) {
+              const tbody = document.getElementById('switch-tbody');
+              tbody.innerHTML = '';
+              switches.forEach((s) => {
+                  const row = tbody.insertRow();
+                  if (s.stream) {
+                      row.insertCell(0).textContent = s.timestamp.toFixed(2);
+                      row.insertCell(1).textContent = s.stream.type;
+                      row.insertCell(2).textContent = s.stream.id;
+                      row.insertCell(3).textContent = s.stream.width || 'N/A';
+                      row.insertCell(4).textContent = s.stream.height || 'N/A';
+                      row.insertCell(5).textContent = (s.stream.bandwidth / 1000).toFixed(0) + ' kbps';
+                  } else {
+                      row.insertCell(0).textContent = s.timestamp.toFixed(2);
+                      row.insertCell(1).textContent = 'No stream';
+                      row.insertCell(2).colSpan = 4;
+                      row.cells[2].textContent = 'N/A';
+                  }
+              });
+          }
+
+          function updateMetrics() {
+              if (!player || !player.getManifest()) return;
+
+              const stats = player.getStats();
+              const variantTrack = player.getVariantTracks().find((track) => track.active);
+              const buffered = video.buffered.length > 0 ? video.buffered.end(video.buffered.length - 1).toFixed(2) : '0.00';
+              const bufferHealth = video.buffered.length > 0
+                  ? ((video.buffered.end(0) - video.currentTime) / (video.duration || 1) * 100).toFixed(1) + '%'
+                  : 'N/A';
+
+              updateMetric('state', player.getManifest() ? 'READY' : 'IDLE');
+              updateMetric('buffered', buffered);
+              updateMetric('current-time', video.currentTime.toFixed(2));
+              updateMetric('duration', video.duration ? video.duration.toFixed(2) : '0.00');
+              updateMetric('playback-rate', video.playbackRate);
+              updateMetric('dropped-frames', stats.droppedFrames || 0);
+              updateMetric('decoded-frames', stats.decodedFrames || 0);
+              updateMetric('fps', fpsCounter.fps);
+              updateMetric('stalls', stallCounter);
+              updateMetric('bandwidth', stats.estimatedBandwidth ? (stats.estimatedBandwidth / 1000).toFixed(0) + ' kbps' : '0');
+              updateMetric('play-time', (stats.playTime || 0).toFixed(2));
+              updateMetric('load-latency', (stats.loadLatency || 0).toFixed(0));
+              updateMetric('resolution', variantTrack ? `${variantTrack.width}x${variantTrack.height}` : 'N/A');
+              updateMetric('bitrate', variantTrack ? (variantTrack.bandwidth / 1000).toFixed(0) + ' kbps' : '0');
+              updateMetric('buffer-health', bufferHealth);
+              updateSwitchHistory(stats.switchHistory || []);
+          }
+
+          // Update metrics every second
+          setInterval(updateMetrics, 1000);
+
+          // Initial reset
+          resetMetrics();
+      });
+  </script>
+{% endblock %}

@@ -1,0 +1,28 @@
+---
+
+#- name: Create application directory
+#  ansible.builtin.file:
+#    path: "{{ venv_path | dirname }}"
+#    state: directory
+#    owner: "{{ app_user }}"
+#    group: "{{ app_user }}"
+#    mode: "0755"
+
+- name: Create the virtual environment
+  ansible.builtin.command:
+    cmd: "python{{ python_version }} -m venv {{ venv_path }}"
+    creates: "{{ venv_path }}/bin/activate"
+  become_user: "{{ app_user }}"
+
+- name: Upgrade pip inside the venv
+  ansible.builtin.pip:
+    name: pip
+    state: latest
+    executable: "{{ venv_path }}/bin/pip"
+
+- name: Install requirements
+  ansible.builtin.pip:
+    chdir: "{{ project_path }}"
+    requirements: "{{ requirements_file }}"
+    virtualenv: "{{ venv_path }}"
+#  when: requirements_file is file

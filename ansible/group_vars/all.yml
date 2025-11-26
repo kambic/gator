@@ -1,0 +1,41 @@
+---
+
+# App config
+django_settings_module: config.settings.production
+gunicorn_port: 8000
+gunicorn_workers: 4
+gunicorn_threads: 2
+nginx_port: 80
+app_name: "alligator"
+app_path: "/opt/vidra/{{ app_name }}"
+repo_url: "https://gitlab.telekom.si/vidra/alligator.git"
+venv_path: "{{ app_path }}/.venv"
+gunicorn_service : "gunicorn_alligator"
+setup_git_repo : true
+# Django-specific
+
+# a unix path-friendly name (IE, no spaces or special characters)
+project_name: "{{ app_name }}"
+
+
+static_root: "{{ install_root }}/{{ project_name }}/staticfiles"
+
+# the dns name or names (space separated) for your server
+server_name: bpl-vidra-03.ts.telekom bpl-vidra-02.ts.telekom
+bind_url : "unix:/var/run/alligator/alligator.sock"
+
+# apt packages, you should not need to change this unless you have packages
+# listed in your requirements.txt that depend on system packages.
+system_packages:
+  - git
+  - git-lfs
+  - software-properties-common
+  - nginx
+#  - gunicorn
+#  - postgresql
+#  - postgresql-server-dev-all
+  - python-pip
+  - python-dev
+#  - python-psycopg2
+
+# vim:ft=ansible:

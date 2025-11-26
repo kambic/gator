@@ -1,0 +1,21 @@
+# ------------------------------------------------------------------
+# Celery Queues Configuration
+# ------------------------------------------------------------------
+celery_queues:
+  default:
+    concurrency: 4
+    loglevel: INFO
+  high_priority:
+    concurrency: 2
+    loglevel: WARNING
+  low_priority:
+    concurrency: 6
+    loglevel: INFO
+
+celery_broker_url: "redis://{{ redis_host }}:{{ redis_port }}/0"
+celery_result_backend: "redis://{{ redis_host }}:{{ redis_port }}/1"
+celery_beat_schedule_file: "{{ app_path }}/celerybeat-schedule"
+celery_log_level: "INFO"
+
+redis_host: "127.0.0.1"
+redis_port: 6379

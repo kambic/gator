@@ -1,0 +1,129 @@
+{% extends 'vod/base.html' %}
+
+{% block content %}
+  <!-- File Tree Explorer Component -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+        <i class="fas fa-folder-open mr-3 text-yellow-500"></i>
+        Project Files
+      </h3>
+    </div>
+
+    <div class="p-4 max-h-96 overflow-y-auto custom-scrollbar">
+      <ul class="space-y-1">
+      <!-- Root Level Item -->
+        <li x-data="fileTreeItem()">
+          <div @click="toggle" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer select-none group">
+            <i :class="open ? 'fa-folder-open' : 'fa-folder'"
+               class="fas text-yellow-600 dark:text-yellow-400 mr-3 w-5 text-center transition-transform"
+               :style="open ? 'transform: rotate(0deg)' : ''"></i>
+            <span class="font-medium text-gray-800 dark:text-gray-200">src</span>
+            <i class="fas fa-chevron-right ml-auto text-xs text-gray-400 transition-transform"
+               :class="open ? 'rotate-90' : ''"></i>
+          </div>
+
+        <!-- Children (nested) -->
+          <ul x-show="open" x-collapse class="ml-8 mt-1 border-l-2 border-gray-300 dark:border-gray-600 pl-2">
+            <li x-data="fileTreeItem()">
+              <div @click="toggle" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer group">
+                <i :class="open ? 'fa-folder-open' : 'fa-folder'"
+                   class="fas text-yellow-600 dark:text-yellow-400 mr-3 w-5 text-center"></i>
+                <span class="text-gray-700 dark:text-gray-300">components</span>
+                <i class="fas fa-chevron-right ml-auto text-xs text-gray-400 transition-transform"
+                   :class="open ? 'rotate-90' : ''"></i>
+              </div>
+              <ul x-show="open" x-collapse class="ml-8 mt-1 border-l-2 border-gray-300 dark:border-gray-600 pl-2">
+                <li x-data="fileItem()" @click.stop="select"
+                    :class="selected ? 'bg-blue-100 dark:bg-blue-900/30' : ''"
+                    class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                  <i class="far fa-file-code text-green-600 dark:text-green-400 mr-3 w-5"></i>
+                  <span class="text-sm">Header.vue</span>
+                </li>
+                <li x-data="fileItem()" @click.stop="select" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                  <i class="far fa-file-code text-purple-600 dark:text-purple-400 mr-3 w-5"></i>
+                  <span class="text-sm">Sidebar.vue</span>
+                </li>
+              </ul>
+            </li>
+
+            <li x-data="fileItem()" @click.stop="select"
+                :class="selected ? 'bg-blue-100 dark:bg-blue-900/30' : ''"
+                class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+              <i class="fas fa-file-alt text-blue-600 dark:text-blue-400 mr-3 w-5"></i>
+              <span class="text-gray-700 dark:text-gray-300">main.py</span>
+            </li>
+
+            <li x-data="fileItem()" @click.stop="select" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+              <i class="fas fa-cog text-gray-600 dark:text-gray-400 mr-3 w-5"></i>
+              <span class="text-gray-700 dark:text-gray-300">settings.json</span>
+            </li>
+          </ul>
+        </li>
+
+      <!-- Another Root Folder -->
+        <li x-data="fileTreeItem()">
+          <div @click="toggle" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer group">
+            <i :class="open ? 'fa-folder-open' : 'fa-folder'" class="fas text-yellow-600 dark:text-yellow-400 mr-3 w-5"></i>
+            <span class="font-medium text-gray-800 dark:text-gray-200">public</span>
+            <i class="fas fa-chevron-right ml-auto text-xs text-gray-400 transition-transform"
+               :class="open ? 'rotate-90' : ''"></i>
+          </div>
+          <ul x-show="open" x-collapse class="ml-8 mt-1 border-l-2 border-gray-300 dark:border-gray-600 pl-2">
+            <li x-data="fileItem()" @click.stop="select" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+              <i class="fas fa-image text-pink-600 dark:text-pink-400 mr-3 w-5"></i>
+              <span class="text-sm text-gray-700 dark:text-gray-300">logo.png</span>
+            </li>
+          </ul>
+        </li>
+
+      <!-- Root File -->
+        <li x-data="fileItem()" @click.stop="select"
+            :class="selected ? 'bg-blue-100 dark:bg-blue-900/30' : ''"
+            class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+          <i class="far fa-file text-gray-500 dark:text-gray-400 mr-3 w-5"></i>
+          <span class="text-gray-700 dark:text-gray-300">README.md</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+<!-- Alpine.js Components (place in <script> or external file) -->
+  <script>
+    function fileTreeItem() {
+      return {
+        open: false,
+        toggle() {
+          this.open = !this.open
+        }
+      }
+    }
+
+    function fileItem() {
+      return {
+        selected: false,
+        select() {
+      // Deselect all others (optional: make single selection)
+          document.querySelectorAll('[x-data="fileItem()"]').forEach(el => {
+            if (el.__x) el.__x.$data.selected = false
+          })
+          this.selected = true
+        }
+      }
+    }
+  </script>
+
+<!-- Optional: Custom scrollbar (add to your CSS) -->
+  <style>
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 3px;
+    }
+    .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: #475569;
+    }
+  </style>
+
+{% endblock %}

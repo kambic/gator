@@ -1,0 +1,57 @@
+{% extends 'vod/base.html' %}
+{% load static %}
+
+{% block content %}
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+        <i class="fas fa-folder-open mr-3 text-yellow-500"></i>
+        Project Explorer
+      </h3>
+      <button hx-get="{% url 'vod:file_tree' %}?path=" hx-target="#file-tree" hx-swap="innerHTML"
+              class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+    </div>
+
+    <div id="file-tree" class="p-4 max-h-96 overflow-y-auto custom-scrollbar">
+    <!-- Initial load -->
+      <div hx-get="{% url 'vod:file_tree' %}"
+           hx-trigger="load"
+           hx-swap="innerHTML">
+        <div class="text-center py-8 text-gray-500">
+          <i class="fas fa-spinner fa-spin text-2xl"></i>
+          <p class="mt-2">Loading files...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function fileTreeItem() {
+      return {
+        open: false,
+        loaded: false,
+        loading: false,
+
+        toggle() {
+          if (this.open) {
+            this.open = false
+            return
+          }
+
+          this.open = true
+      // loading state will be set by HTMX events below
+        }
+      }
+    }
+
+// Optional: Listen for file selection
+    document.body.addEventListener('file-selected', (e) => {
+      console.log('Selected:', e.detail.name, '→', e.detail.path)
+  // Example: load file content
+  // htmx.ajax('GET', '/view-file/?path=' + encodeURIComponent(e.detail.path), '#editor')
+    })
+  </script>
+
+{% endblock %}

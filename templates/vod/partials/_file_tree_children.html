@@ -1,0 +1,67 @@
+{# templates/partials/_file_tree_children.html #}
+<ul class="space-y-1">
+  {% for item in items %}
+    <li x-data="fileTreeItem()" class="select-none">
+
+      {% if item.type == "folder" %}
+        <!-- Folder Row with inline loading spinner -->
+        <div @click="toggle"
+             class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer group relative">
+
+          <i :class="open ? 'fa-folder-open' : 'fa-folder'"
+             class="fas text-yellow-600 dark:text-yellow-400 mr-3 w-5 transition-transform"></i>
+
+          <span class="font-medium text-gray-800 dark:text-gray-200 truncate flex-1">
+            {{ item.name }}
+          </span>
+
+          <!-- Inline loading spinner (only shows when loading) -->
+          <i x-show="loading"
+             class="fas fa-spinner fa-spin text-xs text-blue-600 dark:text-blue-400 ml-2"></i>
+
+          <!-- Chevron -->
+          <i class="fas fa-chevron-right ml-auto text-xs text-gray-400 transition-transform"
+             :class="open ? 'rotate-90' : ''"></i>
+        </div>
+
+        <!-- Children container -->
+        <div x-show="open" x-collapse class="ml-8 border-l-2 border-gray-300 dark:border-gray-600">
+
+          <!-- Load only once when opened -->
+          <template x-if="open && !loaded">
+            <div hx-get="?path={{ item.path|urlencode }}"
+                 hx-trigger="load"
+                 hx-swap="outerHTML"
+                 hx-target="this"
+                 @htmx:before-request="$data.loading = true"
+                 @htmx:after-request="$data.loading = false; $data.loaded = true"
+                 class="pl-4 py-2">
+              <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                <i class="fas fa-spinner fa-spin mr-2"></i>
+                Loading {{ item.name }}...
+              </div>
+            </div>
+          </template>
+        </div>
+
+      {% else %}
+        <!-- File Row -->
+        <div @click.stop="$dispatch('file-selected', { name: '{{ item.name }}', path: '{{ item.path }}' })"
+             class="flex items-center px-3 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer group">
+
+          {% if item.name|slice:"-3:" == ".py" %}
+            <i class="far fa-file-code text-green-600 dark:text-green-400 mr-3 w-5"></i>
+          {% elif item.name|slice:"-5:" == ".html" %}
+            <i class="fas fa-file-code text-blue-600 dark:text-blue-400 mr-3 w-5"></i>
+          {% elif item.name|lower|slice:"-4:" in ".png.jpg.jpeg.svg.gif.ico.webp" %}
+            <i class="fas fa-image text-pink-600 dark:text-pink-400 mr-3 w-5"></i>
+          {% else %}
+            <i class="far fa-file text-gray-500 dark:text-gray-400 mr-3 w-5"></i>
+          {% endif %}
+
+          <span class="text-sm text-gray-700 dark:text-gray-300 truncate">{{ item.name }}</span>
+        </div>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>

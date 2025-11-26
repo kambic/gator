@@ -1,0 +1,94 @@
+{% load humanize %}  {# For file size formatting #}
+
+{% for entry in entries %}
+  <li class="file-tree-node mb-1">
+    {% if entry.is_dir %}
+      <div x-data="{ open: false, loading: false }"
+           x-init="
+             $watch('open', (value) => {
+               if (value && !loading) {
+                 loading = true;
+                 $nextTick(() => {
+                   const trigger = $el.querySelector('[hx-get]');
+                   if (trigger) {
+                     trigger.dispatchEvent(new CustomEvent('htmx:load'));
+                   }
+                 });
+               }
+             })
+           "
+           x-on:htmx:after-request.window="loading = false">
+        <a @click.prevent="open = !open; loading = open"
+           class="d-flex align-items-center p-2 text-dark text-decoration-none cursor-pointer w-100"
+           :class="{ 'loading': loading, 'text-muted': loading }"
+           hx-get="{% url 'vod:files' path=entry.rel_path %}"
+           hx-trigger="click delay:500ms"
+           hx-target=".file-tree-content-{{ entry.name|slugify }}"
+           hx-swap="outerHTML"
+           hx-indicator="#loading-{{ entry.name|slugify }}">
+          <i class="me-2 fas fa-fw"
+             :class="{
+               'fa-folder text-warning': !open && !loading,
+               'fa-folder-open text-success': open && !loading,
+               'fa-spinner fa-spin text-info': loading
+             }"></i>
+          <span class="flex-grow-1">{{ entry.name }}/</span>
+          <small class="text-muted" x-show="!loading">({{ entry.is_dir|yesno:"dir,file" }})</small>
+        </a>
+
+        <div x-show="open"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 max-h-0"
+             x-transition:enter-end="opacity-100 max-h-96"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 max-h-96"
+             x-transition:leave-end="opacity-0 max-h-0"
+             class="ms-4 overflow-hidden mt-1">
+
+          <!-- Loading indicator -->
+          <div x-show="loading" id="loading-{{ entry.name|slugify }}"
+               class="loading-indicator p-2 bg-light rounded">
+            <div class="d-flex align-items-center text-muted">
+              <i class="fas fa-spinner fa-spin me-2"></i>
+              Loading {{ entry.name }}...
+            </div>
+          </div>
+
+          <!-- Content area -->
+          <ul class="list-unstyled m-0" x-show="!loading">
+            <li>
+              <div
+                class="file-tree-content-{{ entry.name|slugify }}"
+                hx-trigger="load"
+                hx-indicator="#loading-{{ entry.name|slugify }}">
+                <!-- HTMX will populate this -->
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    {% else %}
+      <!-- File item -->
+      <div class="d-flex align-items-center p-2 text-dark cursor-pointer file-item"
+           hx-get="{% url 'vod:file_info' entry.rel_path %}"
+           hx-trigger="click"
+           hx-target="this"
+           hx-swap="outerHTML">
+        <i class="me-2 fas {{ entry.icon }} text-muted"></i>
+        <span class="flex-grow-1">{{ entry.name }}</span>
+        <small class="text-muted">
+          {% if entry.size %}
+            {{ entry.size|filesizeformat }}
+          {% endif %}
+          <br>
+          <small class="opacity-75">{{ entry.modified|date:"M d, Y" }}</small>
+        </small>
+      </div>
+    {% endif %}
+  </li>
+{% empty %}
+  <li class="p-3 text-muted text-center">
+    <i class="fas fa-folder-open fa-2x mb-2 opacity-50"></i>
+    <div>This folder is empty</div>
+  </li>
+{% endfor %}

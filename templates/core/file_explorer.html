@@ -1,0 +1,236 @@
+{% extends "core/base.html" %} {% block title %}File Explorer{% endblock %} {% block content %}
+
+
+
+        <!-- FILE BROWSER -->
+        <section id="files" class="card bg-base-100 shadow-xl p-6">
+            <h2 class="card-title">🗂 File Browser</h2>
+            <ul class="menu mt-3">
+                <li><details open><summary>📁 Videos</summary>
+                    <ul><li><a>clip1.mp4</a></li><li><a>clip2.mkv</a></li></ul>
+                </details></li>
+
+                <li><details><summary>📁 Logs</summary>
+                    <ul><li><a>log1.txt</a></li><li><a>log2.txt</a></li></ul>
+                </details></li>
+            </ul>
+        </section>
+
+
+<div x-data="fileExplorer()" x-init="loadFiles()" class="bg-base-200 min-h-screen p-6">
+  <div class="card bg-base-100 shadow-xl">
+    <div class="card-body">
+      <h2 class="card-title text-primary mb-4 text-3xl">📂 File Explorer</h2>
+
+      <div class="breadcrumbs mb-4 border-b pb-2 text-sm">
+        <ul class="flex items-center space-x-1">
+          <li>
+            <a href="#" @click.prevent="goTo(-1)" :class="{'font-bold': breadcrumbs.length === 0}"
+              >🏠 Root</a
+            >
+          </li>
+          <template x-for="(crumb, i) in breadcrumbs" :key="i">
+            <li>
+              <a
+                href="#"
+                @click.prevent="goTo(i)"
+                x-text="crumb"
+                :class="{'font-bold': i === breadcrumbs.length - 1}"
+              ></a>
+            </li>
+          </template>
+        </ul>
+      </div>
+
+      <div x-show="loading" class="p-6 text-center">
+        <span class="loading loading-spinner loading-lg text-primary"></span>
+        <p class="mt-2 text-lg">Loading files...</p>
+      </div>
+
+      <div x-show="error" class="alert alert-error mb-4 shadow-lg">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 shrink-0 stroke-current"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+        <span x-text="error"></span>
+        <button class="btn btn-sm btn-ghost" @click="error = ''">Close</button>
+      </div>
+
+      <div x-show="!loading && !error" class="overflow-x-auto">
+        <table class="table-lg table w-full">
+          <thead>
+            <tr class="bg-base-200">
+              <th>Name</th>
+              <th class="text-right">Size</th>
+              <th class="text-right">Modified</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template x-for="file in files" :key="file.path">
+              <tr class="hover:bg-base-200 transition-colors duration-150">
+                <td class="font-medium">
+                  <template x-if="file.is_dir">
+                    <a href="#" class="link link-primary" @click.prevent="openDir(file.path)">
+                      <span class="mr-2">📁</span><span x-text="file.name"></span>
+                    </a>
+                  </template>
+                  <template x-if="!file.is_dir">
+                    <span><span class="mr-2">📄</span><span x-text="file.name"></span></span>
+                  </template>
+                </td>
+                <td class="text-right" x-text="file.is_dir ? '-' : formatSize(file.size)"></td>
+                <td class="text-right" x-text="formatDate(file.modified)"></td>
+
+                <td class="text-center">
+                  <div class="dropdown dropdown-end">
+                    <label tabindex="0" class="btn btn-ghost btn-circle btn-sm">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                        />
+                      </svg>
+                    </label>
+                    <ul
+                      tabindex="0"
+                      class="dropdown-content menu bg-base-100 rounded-box z-[1] w-36 p-2 shadow"
+                    >
+                      <li x-show="!file.is_dir">
+                        <a href="#" class="text-success">⬇️ Download</a>
+                      </li>
+                      <li>
+                        <a href="#" class="text-error" @click.prevent="deleteFile(file.path)"
+                          >🗑 Delete</a
+                        >
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+            </template>
+            <tr x-show="files.length === 0 && !loading && !error">
+              <td colspan="4" class="p-4 text-center text-gray-500">This directory is empty.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function fileExplorer() {
+    return {
+      path: '',
+      files: [],
+      breadcrumbs: [],
+      loading: false, // New state for loading
+      error: '', // New state for error messages
+
+      loadFiles() {
+        this.loading = true; // Set loading state
+        this.error = ''; // Clear previous errors
+
+        // Ensure the path is correctly formatted for the breadcrumbs
+        const pathParts = this.path.split('/').filter(Boolean);
+        this.breadcrumbs = pathParts;
+
+        fetch(`{% url 'core:file_api' %}?path=${encodeURIComponent(this.path)}`)
+          .then((r) => {
+            if (!r.ok) {
+              // Throw an error if the response status is not successful (e.g., 404, 500)
+              return r.json().then((err) => {
+                throw new Error(err.detail || 'Failed to load files.');
+              });
+            }
+            return r.json();
+          })
+          .then((data) => {
+            this.files = data;
+          })
+          .catch((e) => {
+            console.error('File Explorer Error:', e);
+            this.error = e.message || 'An unknown error occurred while fetching files.';
+            this.files = []; // Clear files on error
+          })
+          .finally(() => {
+            this.loading = false; // Clear loading state
+          });
+      },
+
+      openDir(p) {
+        this.path = p;
+        this.loadFiles();
+      },
+
+      goTo(index) {
+        if (index === -1) {
+          // Root navigation
+          this.path = '';
+        } else {
+          // Reconstruct path from breadcrumbs up to and including the clicked index
+          this.path = this.breadcrumbs.slice(0, index + 1).join('/');
+        }
+        this.loadFiles();
+      },
+
+      deleteFile(path) {
+        if (!confirm(`Are you sure you want to delete "${path.split('/').pop()}"?`)) return;
+        this.loading = true;
+        this.error = '';
+
+        fetch(`/api/files/?path=${encodeURIComponent(path)}`, { method: 'DELETE' })
+          .then((r) => {
+            if (!r.ok) {
+              return r.json().then((err) => {
+                throw new Error(err.detail || 'Failed to delete file.');
+              });
+            }
+          })
+          .then(() => {
+            this.loadFiles(); // Reload files on success
+          })
+          .catch((e) => {
+            console.error('Delete Error:', e);
+            this.error = e.message || 'An unknown error occurred during deletion.';
+            this.loading = false;
+          });
+      },
+
+      // --- Utility Functions for Formatting ---
+      formatSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+      },
+
+      formatDate(timestamp) {
+        const date = new Date(timestamp);
+        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+      },
+      // --- End Utility Functions ---
+    };
+  }
+</script>
+
+{% endblock %}

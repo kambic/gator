@@ -1,0 +1,108 @@
+version: "3.8"
+
+services:
+  alteka:
+    image: gitlab.telekom.si:4567/vidra/vydra/22.04:2025.07.21-284
+    command:
+      [
+        "/opt/vydra/bin/celery",
+        "worker",
+        "-n",
+        "alteka@swarm",
+        "-A",
+        "vydra",
+        "-l",
+        "info",
+        "-Q",
+        "alteka",
+      ]
+    # ports:
+    #   - 5672:5672
+    environment:
+      - VYDRA_CONFIG=/etc/vydra/config.yml
+    volumes:
+      - /etc/vydra:/etc/vydra
+      - /var/tmp:/var/tmp
+      - /export:/export:rshared
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+
+    networks:
+      - vydra-net
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    restart: always
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: vydra
+      RABBITMQ_DEFAULT_PASS: vydra
+      RABBITMQ_DEFAULT_VHOST: celery
+    # configs:
+    #   - source: rabbitmq-plugins
+    #     target: /etc/rabbitmq/enabled_plugins
+    volumes:
+      - rabbitmq-lib:/var/lib/rabbitmq
+      - rabbitmq-log:/var/log/rabbitmq
+    networks:
+      - vydra-net
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    #    ports:
+    #      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    networks:
+      - vydra-net
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+  flower:
+    image: mher/flower
+    restart: always
+    environment:
+      - TZ=Europe/Berlin
+      - CELERY_TIMEZONE=Europe/Berlin
+      - FLOWER_URL_PREFIX=flower
+    ports:
+      - 8080:5555
+    # volumes:
+    # - flower-data:/data
+    networks:
+      - vydra-net
+    command:
+      [
+        "celery",
+        "--broker=amqp://vydra:vydra@rabbitmq:5672/celery",
+        "flower",
+        "--basic-auth=vydra:vydra",
+        "--url_prefix=flower",
+        '--broker_api="http://vydra:vydra@rabbitmq:15672/api',
+      ]
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+networks:
+  vydra-net:
+
+volumes:
+  rabbitmq-lib:
+    driver: local
+  rabbitmq-log:
+    driver: local
+  redis-data:
+    driver: local

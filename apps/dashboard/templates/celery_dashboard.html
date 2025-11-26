@@ -1,0 +1,36 @@
+{% extends 'layout.html' %}
+
+
+{% block externallinks %}
+  <meta charset="UTF-8">
+  <title>Celery Queue Dashboard</title>
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <script src="https://unpkg.com/alpinejs" defer></script>
+{% endblock %}
+
+{% block content %}
+
+  <body x-data="{ lastUpdate: new Date().toLocaleTimeString() }">
+  <h1>Celery Queue Dashboard (RabbitMQ)</h1>
+
+  <div class="mb-4" x-init="setInterval(() => lastUpdate = new Date().toLocaleTimeString(), 1000)">
+    ⏰ Last updated: <span x-text="lastUpdate"></span>
+    <button
+        hx-get="{% url 'dashboard:celery_queue_table' %}"
+        hx-target="#queue-table"
+        hx-swap="outerHTML"
+        class="ml-4 px-3 py-1 bg-blue-500 text-white rounded"
+    >🔄 Refresh Now
+    </button>
+  </div>
+
+  <div
+      id="queue-table"
+      hx-get="{% url 'dashboard:celery_queue_table' %}"
+      hx-trigger="load, every 5s"
+      hx-swap="outerHTML"
+  >
+    Loading...
+  </div>
+  </body>
+{% endblock %}

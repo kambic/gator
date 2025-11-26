@@ -1,0 +1,13 @@
+---
+- name: Deploy CMS Production Stack
+  hosts: vidra
+  vars_files:
+    - group_vars/all.yml
+#    - group_vars/vault.yml
+  roles:
+    - common
+#    - postgresql
+    - django
+    - nginx
+
+# vim:ft=ansible:

@@ -1,0 +1,114 @@
+{% extends 'layout.html' %}
+
+{% load pygmentify static %}
+
+{% block extra_css %}
+  <style>
+    .bg-received {
+      --bs-bg-opacity: 1;
+      background-color: rgba(var(--bs-secondary-rgb), var(--bs-bg-opacity)) !important;
+    }
+
+    .bg-started {
+      --bs-bg-opacity: 1;
+      background-color: rgba(var(--bs-primary-rgb), var(--bs-bg-opacity)) !important;
+    }
+
+    .bg-failure {
+      --bs-bg-opacity: 1;
+      background-color: rgba(var(--bs-danger-rgb), var(--bs-bg-opacity)) !important;
+    }
+
+    .highlight {
+      margin-bottom: 20px;
+    }
+  </style>
+
+  <link href="{% static 'django_pygments/css/pygments_default.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="col">
+        <table class="table table-bordered table-striped">
+          <tbody>
+            <tr>
+              <td>Name</td>
+              <td>{{ task.name }}</td>
+            </tr>
+            <tr>
+              <td>UUID</td>
+              <td>
+                <a href="/flower/task/{{ task.uuid }}" target="_blank">{{ task.uuid }}</a>
+              </td>
+            </tr>
+            <tr>
+              <td>State</td>
+              <td>
+                <span class="badge bg-{{ task.state|lower }}">{{ task.state }}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>args</td>
+              <td>
+                {% pygment linenos=False %}
+                <pre lang="python">{{ task.args }}</pre>
+                {% endpygment %}
+              </td>
+            </tr>
+            <tr>
+              <td>kwargs</td>
+              <td>
+                {% pygment linenos=False %}
+                <pre lang="python">{{ task.kwargs }}</pre>
+                {% endpygment %}
+              </td>
+            </tr>
+            <tr>
+              <td>Worker</td>
+              <td>{{ task.hostname }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% autoescape off %}
+    {% for event in task.taskevent_set.all %}
+      <div class="accordion" id="accordionFlushExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="flush-heading-{{ forloop.counter }}">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-{{ forloop.counter }}" aria-expanded="false" aria-controls="flush-collapse-{{ forloop.counter }}">
+              <div class="d-flex justify-content-between" style="width: 200px;">
+                <span class="badge bg-{{ event.msg.state|lower }}">{{ event.msg.state|lower }}</span>
+                <span>{{ event.created }}</span>
+              </div>
+            </button>
+          </h2>
+          <div id="flush-collapse-{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.last %}show{% endif %}" aria-labelledby="flush-heading-{{ forloop.counter }}" data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">
+              {% pygment linenos=False %}
+              <pre lang="json">{{ event.prettified }}</pre>
+              {% endpygment %}
+              {% if event.msg.state == 'FAILURE' %}
+                {% pygment linenos=False %}
+                <pre lang="python">{{ event.msg.traceback }}</pre>
+                {% endpygment %}
+                {% pygment linenos=False %}
+                <pre lang="q">{{ event.msg.log }}</pre>
+                {% endpygment %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  {% endautoescape %}
+{% endblock %}
+{% block modal %}
+
+{% endblock %}
+{% block inline_javascript %}
+
+{% endblock %}

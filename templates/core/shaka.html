@@ -1,0 +1,174 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Shaka Player • Premium Demo{% endblock %}
+{% block extra_head %}
+{#  <script src="https://cdn.jsdelivr.net/npm/shaka-player@4/dist/shaka-player.ui.js"></script>#}
+{#  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4/dist/controls.css"/>#}
+{% endblock %}
+{% block content %}
+  <div class="from-base-200 via-base-300 to-base-200 min-h-screen bg-gradient-to-br">
+    <div class="container mx-auto px-4 py-12" x-data="shakaPlayer()">
+      <!-- Header -->
+      <div class="mb-12 text-center">
+        <h1 class="from-primary to-accent mb-4 bg-gradient-to-r bg-clip-text text-5xl font-black text-transparent md:text-6xl">
+          🎬 Shaka Player
+        </h1>
+      </div>
+
+      <!-- Stream Input Card -->
+      <div class="card bg-base-100/80 border-base-300/50 mb-8 rounded-2xl border p-6 shadow-2xl backdrop-blur-lg">
+        <div class="flex flex-col items-end gap-4 lg:flex-row">
+          <div class="flex-1">
+            <label class="label label-text text-base-content/80 font-semibold">Stream URL (DASH / HLS)</label>
+            <input
+                    x-model="manifest"
+                    type="url"
+                    placeholder="rr.sdn.si...."
+                    class="input input-lg input-bordered bg-base-200/50 focus:bg-base-100 w-full transition-all duration-300"
+            />
+            <p class="label">https://rr.sdn.si/__cl/s:storage-lj,storage-mb-new/__c/v/6/0/7/v_34128ff5baf8425_607a8cb89da2fd134ddfadcb6c8b5922/__op/mss-default/__f/Manifest</p>
+
+          </div>
+          <div class="flex gap-3">
+            <button
+                    @click="loadStream()"
+                    class="btn btn-primary btn-lg transform shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl"
+            >
+              <i class="fas fa-play mr-2"></i> Load Stream
+            </button>
+            <button
+                    @click="toggleAbr()"
+                    :class="player?.getConfiguration().abr.enabled ? 'btn-success' : 'btn-warning'"
+                    class="btn btn-lg"
+            >
+              <i class="fas fa-brain mr-2"></i>
+              <span x-text="player?.getConfiguration().abr.enabled ? 'ABR On' : 'ABR Off'"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Video Player Card -->
+      <div class="card border-base-300/30 mb-10 overflow-hidden rounded-3xl border bg-black/90 shadow-2xl">
+        <div class="group relative">
+          <video
+                  x-ref="video"
+                  poster="https://placehold.co/1920x1080/111827/e2e8f0?text=Shaka+Player+Ready&font=roboto"
+                  class="aspect-video w-full"
+                  controls
+                  autoplay
+                  muted
+          ></video>
+          <div
+                  class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Controls Grid -->
+      <div class="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <!-- Subtitle Selector -->
+        <div class="card bg-base-100/70 border-base-300/40 border shadow-xl backdrop-blur">
+          <div class="card-body">
+            <h3 class="card-title text-lg"><i class="fas fa-closed-captioning mr-2"></i>Subtitles</h3>
+            <select
+                    class="select select-bordered w-full"
+                    @change="changeSubtitle($event.target.value)"
+            >
+              <option value="">Off</option>
+              <template x-for="track in subtitleTracks" :key="track.id">
+                <option :value="track.id" :selected="track.active">
+                  <span x-text="track.label || track.language || 'Unknown'"></span>
+                  <span
+                          class="opacity-60"
+                          x-text="track.kind === 'subtitle' ? '' : ` (${track.kind})`"
+                  ></span>
+                </option>
+              </template>
+            </select>
+            <label class="label mt-4 cursor-pointer justify-start gap-4">
+              <input
+                      type="checkbox"
+                      class="toggle toggle-primary"
+                      @change="player.setTextTrackVisibility($event.target.checked)"
+              />
+              <span class="label-text">Show subtitles</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Quality Selector -->
+        <div class="card bg-base-100/70 border-base-300/40 border shadow-xl backdrop-blur">
+          <div class="card-body">
+            <h3 class="card-title text-lg"><i class="fas fa-hd-video mr-2"></i>Video Quality</h3>
+            <select class="select select-bordered w-full"
+                    @change="changeQuality($event.target.value)">
+              <option value="auto">Auto (Best Available)</option>
+              <template x-for="track in videoTracks.filter(t => t.active || true)" :key="track.id">
+                <option
+                        :value="track.id"
+                        :selected="track.active"
+                        x-text="`${track.height}p @ ${Math.round(track.bandwidth / 1000)}kbps` + (track.active ? ' ✓' : '')"
+                ></option>
+              </template>
+            </select>
+          </div>
+        </div>
+
+        <!-- Upload Custom Subtitle -->
+        <div class="card bg-base-100/70 border-base-300/40 border shadow-xl backdrop-blur">
+          <div class="card-body">
+            <h3 class="card-title text-lg"><i class="fas fa-upload mr-2"></i>Custom Subtitle</h3>
+            <input
+                    type="file"
+                    accept=".vtt,text/vtt"
+                    class="file-input file-input-bordered file-input-primary w-full"
+                    @change="handleSubtitleUpload($event)"
+            />
+            <p class="text-base-content/60 mt-3 text-xs">Upload your own .vtt file</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Debug Collapse -->
+      <div class="collapse-plus bg-base-200/50 border-base-300 collapse mt-12 rounded-2xl border">
+        <input type="checkbox"/>
+        <div class="collapse-title text-xl font-semibold">🔧 Advanced Debug Info</div>
+        <div class="collapse-content">
+        <pre class="bg-base-300/70 max-h-96 overflow-auto rounded-xl p-5 text-xs" x-text="config"></pre>
+        </div>
+      </div>
+
+
+
+        <!-- CHARTS -->
+        <section id="charts" class="card bg-base-100 shadow-xl p-6">
+            <h2 class="card-title">📊 Analytics</h2>
+            <div id="chart"></div>
+        </section>
+
+        <!-- CALENDAR -->
+        <section id="calendar" class="card bg-base-100 shadow-xl p-6">
+            <h2 class="card-title">📅 Calendar</h2>
+            <input type="date" class="input input-bordered w-60 mt-4">
+        </section>
+
+        <!-- FILE BROWSER -->
+        <section id="files" class="card bg-base-100 shadow-xl p-6">
+            <h2 class="card-title">🗂 File Browser</h2>
+            <ul class="menu mt-3">
+                <li><details open><summary>📁 Videos</summary>
+                    <ul><li><a>clip1.mp4</a></li><li><a>clip2.mkv</a></li></ul>
+                </details></li>
+
+                <li><details><summary>📁 Logs</summary>
+                    <ul><li><a>log1.txt</a></li><li><a>log2.txt</a></li></ul>
+                </details></li>
+            </ul>
+        </section>
+
+
+
+    </div>
+  </div>
+{% endblock %}

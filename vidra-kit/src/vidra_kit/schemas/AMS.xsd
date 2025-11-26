@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+    <xs:complexType name="AMSType">
+        <xs:attribute name="Asset_Class" type="xs:string" use="required"/>
+        <xs:attribute name="Asset_ID"   type="xs:string" use="required"/>
+        <xs:attribute name="Provider_ID" type="xs:string" use="required"/>
+        <xs:attribute name="Provider" type="xs:string" use="required"/>
+        <xs:attribute name="Version_Major" type="xs:integer" use="optional"/>
+        <xs:attribute name="Version_Minor" type="xs:integer" use="optional"/>
+        <xs:attribute name="Description" type="xs:string" use="optional"/>
+        <xs:attribute name="Creation_Date" type="xs:dateTime" use="optional"/>
+        <xs:attribute name="Verb" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+</xs:schema>

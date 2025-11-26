@@ -1,0 +1,11 @@
+---
+
+
+- name: reload nginx
+  ansible.builtin.systemd:
+    name: nginx
+    state: reloaded
+
+- name: recreate tmpfiles
+  ansible.builtin.command: systemd-tmpfiles --create
+  when: ansible_service_mgr == "systemd"

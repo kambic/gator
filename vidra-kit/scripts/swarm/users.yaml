@@ -1,0 +1,15 @@
+users:
+  - username: admin
+    email: admin@example.com
+    role: admin
+    password: admin123
+
+  - username: viewer
+    email: viewer@example.com
+    role: viewer
+    password_env: VIEWER_PASSWORD
+
+  - username: user
+    email: user@example.com
+    role: user
+    password_secret: user_password_secret

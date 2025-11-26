@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ADI xmlns:sec="http://example.com/secondary">
+    <Metadata>
+        <AMS Asset_ID="12345"/>
+        <ExtraInfo sec:Source="External"/>
+    </Metadata>
+</ADI>

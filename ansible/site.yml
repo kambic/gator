@@ -1,0 +1,15 @@
+---
+- name: Deploy Django Application
+  hosts: webservers
+  become: yes
+  vars:
+    # Set deployment variables here or in group_vars
+    app_name: mydjangoproject
+    app_path: "/var/www/{{ app_name }}"
+
+  roles:
+    - role: base
+    - role: python_setup
+    - role: webserver
+    - role: application
+    - role: service_management

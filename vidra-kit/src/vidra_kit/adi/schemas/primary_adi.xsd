@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="www.w3.org" elementFormDefault="qualified">
+    <!-- Import secondary schema using namespace -->
+    <xs:import namespace="http://example.com/secondary" schemaLocation="./secondary_types.xsd"/>
+
+    <xs:element name="ADI">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Metadata" type="MetadataType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="MetadataType">
+        <xs:sequence>
+            <xs:element name="AMS" type="AMSType"/>
+            <!-- Use complex type from the imported namespace -->
+            <xs:element name="ExtraInfo" type="sec:SecondaryType" xmlns:sec="http://example.com/secondary"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="AMSType">
+        <xs:attribute name="Asset_ID" type="xs:string" use="required"/>
+    </xs:complexType>
+</xs:schema>

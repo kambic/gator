@@ -1,0 +1,98 @@
+# === General ===
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+*.pid
+*.swp
+.DS_Store
+.env
+*.env
+celerybeat-schedule
+logs/
+pids/
+
+# === IDE / Editor ===
+.idea/
+.vscode/
+*.code-workspace
+
+# === OS / Misc ===
+Thumbs.db
+ehthumbs.db
+
+# === Django ===
+staticfiles/
+postgres_data/
+
+# Keep empty media/static dirs
+!media/.gitkeep
+!static/.gitkeep
+
+# === Node / Frontend ===
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+npm-debug.log*
+frontend/node_modules/
+frontend/package-lock.json
+apps/**/frontend/node_modules/
+apps/**/frontend/package-lock.json
+frontend-tools/**/node_modules/
+frontend-tools/**/package-lock.json
+
+# === Frontend Artifacts ===
+frontend-tools/video-editor-v1/
+frontend-tools/video-editor-v2/
+frontend-tools/.DS_Store
+frontend-tools/video-editor/client/node_modules/
+frontend-tools/video-editor/node_modules/
+static/video_editor/videos/
+
+# === Compiled / Build Output ===
+build/
+dist/
+.cache/
+.npm/
+.tmp/
+coverage/
+*.tgz
+
+# === Static Vendor Bundles (ignore compiled libraries) ===
+static/node_modules/
+static/**/@bufbuild/
+static/**/@esbuild/
+static/**/@fortawesome/
+
+# === Media & Uploads ===
+media/encoded/
+media/original/
+media/hls/
+media/chunks/
+media/uploads/
+media/tinymce_media/
+
+# === Django Static Assets (collected or external libs) ===
+static/admin/
+static/ckeditor/
+static/debug_toolbar/
+static/mptt/
+static/rest_framework/
+static/drf-yasg/
+
+# === Python Virtual Environment ===
+venv/
+env/
+ENV/
+.venv/
+.virtualenv/
+
+# === Docker / Deployment ===
+*.sock
+*.pid.lock
+*.seed
+yt.readme.md

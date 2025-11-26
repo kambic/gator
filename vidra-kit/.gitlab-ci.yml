@@ -1,0 +1,40 @@
+stages:
+  - build
+  - publish
+
+default:
+  image: python:3.11 # Default Docker image for all jobs
+  tags:
+    #    - docker # Tag to match Gitlab-runner-01
+    #    - DockerExecutor-01
+    - docker-executor
+  before_script:
+    - pip install --upgrade pip
+    - pip install uv # Install common dependencies
+
+variables:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+
+build_package:
+  stage: build
+  script:
+    - uv build
+  artifacts:
+    paths:
+      - dist/
+
+
+publish:
+  stage: publish
+  image: python:3.11
+  before_script:
+    - pip install uv twine
+  script:
+    - uv build # Build the package
+    - echo "CI_JOB_TOKEN=$CI_JOB_TOKEN" # Debug token
+    - TWINE_USERNAME=gitlab-ci-token TWINE_PASSWORD=${CI_JOB_TOKEN} python -m twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+    #    - UV_PUBLISH_TOKEN=${CI_JOB_TOKEN} uv publish --index gitlab
+    # - UV_PUBLISH_TOKEN=${CI_JOB_TOKEN} uv publish --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
+#  rules:
+#    - if: '$CI_COMMIT_TAG'

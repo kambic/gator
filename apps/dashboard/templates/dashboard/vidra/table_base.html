@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block extra_css %}
+  <link href="{% static 'css/datatables.css' %}" rel="stylesheet" />
+  <link href="{% static 'css/daterangepicker.css' %}" rel="stylesheet" />
+
+  <style>
+    #{{ table_id }} thead tr:nth-child(2) th {
+      pointer-events: none;
+    }
+    #{{ table_id }} thead tr:nth-child(2) th input,
+    #{{ table_id }} thead tr:nth-child(2) th select {
+      pointer-events: auto;
+    }
+  </style>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/datatables.js' %}"></script>
+  <script src="{% static 'js/moment.min.js' %}"></script>
+  <script src="{% static 'js/daterangepicker.min.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+  <button id="resetFilters" class="btn btn-secondary mb-2">Reset Filters</button>
+
+  <table id="{{ table_id }}" class="display nowrap table table-striped table-bordered table-hover" width="100%">
+    <thead>
+      <tr>
+        {% for column in columns %}
+          <th{% if column.data == 'created' %} class="date-column"{% endif %}>{{ column.title }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tfoot>
+      <tr>
+        {% for column in columns %}
+          <th>{{ column.title }}</th>
+        {% endfor %}
+      </tr>
+    </tfoot>
+  </table>
+{% endblock %}
+
+{% block inline_javascript %}
+  <script>
+    const DataTableManager = {
+      table: null,
+      tableId: '{{ table_id }}',
+      apiUrl: '{{ api_url }}',
+      columns: {{ columns|safe }},
+
+      init() {
+        moment.locale('sl');
+        this.initDataTable();
+        this.setupColumnFilters();
+        this.initDateRangePicker();
+      },
+
+      initDataTable() {
+        const self = this;
+
+        this.table = $(`#${this.tableId}`).DataTable({
+          ajax: {
+            url: this.apiUrl,
+            data: function (d) {
+              d.customer = $('#customerSearchInput').val();
+            }
+          },
+          paging: true,
+          processing: true,
+          serverSide: true,
+          fixedHeader: true,
+          orderCellsTop: true,
+          select: false,
+          stateSave: false,
+          lengthMenu: [25, 50, 100, -1],
+          order: [[0, 'desc']],
+          columns: this.columns,
+          drawCallbackOFFF: function () {
+            self.populateStateDropdown();
+          }
+        });
+      },
+
+      setupColumnFilters() {
+        const self = this;
+
+        // Add second header row for filters
+        $(`#${this.tableId} thead`).append('<tr></tr>');
+
+        $(`#${this.tableId} thead tr:eq(0) th`).each(function (i) {
+          const title = $(this).text();
+          const isDateColumn = $(this).hasClass('date-column');
+          const isStateColumn = self.columns[i].data === 'state';
+
+          if (isDateColumn) {
+            $(`#${self.tableId} thead tr:eq(1)`).append(`<th>
+              <input type="text" class="daterangepicker-filter form-control form-control-sm" placeholder="Filter ${title}"/>
+            </th>`);
+          } else if (isStateColumn) {
+            $(`#${self.tableId} thead tr:eq(1)`).append(`<th>
+              <select class="form-select form-select-sm">
+                <option value="">All ${title}</option>
+              </select>
+            </th>`);
+          } else {
+            $(`#${self.tableId} thead tr:eq(1)`).append(`<th>
+              <input type="text" placeholder="Search ${title}" class="form-control form-control-sm"/>
+            </th>`);
+          }
+        });
+
+        // Text input filter
+        $(`#${this.tableId} thead tr:eq(1) th input:not(.daterangepicker-filter)`).on('keyup change', function () {
+          const colIndex = $(this).parent().index();
+          const val = this.value;
+          if (self.table.column(colIndex).search() !== val) {
+            self.table.column(colIndex).search(val).draw();
+          }
+        });
+
+        // Dropdown filter (State column)
+        $(`#${this.tableId} thead tr:eq(1) th select`).on('change', function () {
+          const colIndex = $(this).parent().index();
+          const val = $(this).val();
+          self.table.column(colIndex).search(val).draw();
+        });
+      },
+
+      initDateRangePicker() {
+        const self = this;
+
+        $(`#${this.tableId} thead tr:eq(1) th .daterangepicker-filter`).daterangepicker({
+          autoUpdateInput: false,
+          locale: {
+            format: 'DD. MM. YYYY',
+            cancelLabel: 'Prekliči',
+            applyLabel: 'Filtriraj',
+            customRangeLabel: 'Po meri',
+            daysOfWeek: moment.weekdaysMin(),
+            monthNames: moment.months(),
+            firstDay: 1
+          }
+        });
+
+        $(`#${this.tableId} thead tr:eq(1) th .daterangepicker-filter`).on('apply.daterangepicker', function (ev, picker) {
+          const colIndex = $(this).parent().index();
+          const start = picker.startDate.format('YYYY-MM-DD');
+          const end = picker.endDate.format('YYYY-MM-DD');
+          $(this).val(picker.startDate.format('DD. MM. YYYY') + ' - ' + picker.endDate.format('DD. MM. YYYY'));
+          self.table.column(colIndex).search(`${start}|${end}`).draw();
+        });
+
+        $(`#${this.tableId} thead tr:eq(1) th .daterangepicker-filter`).on('cancel.daterangepicker', function () {
+          const colIndex = $(this).parent().index();
+          $(this).val('');
+          self.table.column(colIndex).search('').draw();
+        });
+      },
+
+      populateStateDropdown() {
+        const self = this;
+        const data = this.table.ajax.json()?.data || [];
+        const stateColumnIndex = this.columns.findIndex(col => col.data === 'state');
+        if (stateColumnIndex === -1) return;
+
+        const $dropdown = $(`#${this.tableId} thead tr:eq(1) th`).eq(stateColumnIndex).find('select');
+        const states = [...new Set(data.map(row => row.state).filter(Boolean))].sort();
+
+        $dropdown.find('option:not(:first)').remove();
+        states.forEach(state => {
+          $dropdown.append($('<option>', {
+            value: state,
+            text: state
+          }));
+        });
+      },
+
+      async showDetails(uuid) {
+        const $body = $('#uuidDetailsBody');
+        const offcanvas = new bootstrap.Offcanvas('#uuidDetails');
+
+        $body.html('<div class="text-muted">Nalaganje...</div>');
+        offcanvas.show();
+
+        const data = await this.AtemeApiClient.detailsTask(uuid);
+        const createdFormatted = moment(data.created).format('DD. MM. YYYY HH:mm');
+
+        const html = `
+          <div class="mb-3">
+            <h6 class="text-primary">Job Podrobnosti</h6>
+            <dl class="row">
+              <dt class="col-sm-4">UUID</dt>
+              <dd class="col-sm-8 text-monospace">${data.id}</dd>
+              <dt class="col-sm-4">Ime</dt>
+              <dd class="col-sm-8">${data.name}</dd>
+              <dt class="col-sm-4">Status</dt>
+              <dd class="col-sm-8"><span class="badge bg-info">${data.state}</span></dd>
+              <dt class="col-sm-4">Ustvarjen</dt>
+              <dd class="col-sm-8">${createdFormatted}</dd>
+            </dl>
+          </div>
+          <div>
+            <h6 class="text-secondary">Konfiguracija (JSON)</h6>
+            <pre class="bg-light p-2 border rounded small"><code>${JSON.stringify(data.configuration, null, 2)}</code></pre>
+          </div>
+        `;
+
+        $body.html(html);
+      }
+    }
+
+    // Initialize when DOM is ready
+    $(document).ready(() => {
+      DataTableManager.init();
+    });
+
+    // Reset filters
+    $('#resetFilters').on('click', () => {
+      $(`#${DataTableManager.tableId} thead tr:eq(1) th input`).val('');
+      $(`#${DataTableManager.tableId} thead tr:eq(1) th select`).val('');
+      DataTableManager.table.columns().search('').draw();
+    });
+  </script>
+{% endblock %}

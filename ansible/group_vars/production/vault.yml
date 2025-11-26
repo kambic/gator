@@ -1,0 +1,10 @@
+# group_vars/production/vault.yml (BEFORE encryption)
+# ansible-vault encrypt group_vars/production/vault.yml
+
+# Database credentials for the Django application
+db_name: my_production_db
+db_user: django_prod_user
+db_password: "REALLY_STRONG_SECRET_PASSWORD"
+
+# Secret key for Django
+django_secret_key: "SOME_LONG_RANDOM_STRING_GENERATED_IN_DJANGO"

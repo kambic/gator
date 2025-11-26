@@ -1,0 +1,21 @@
+<ADI>
+  <Metadata>
+    <AMS Asset_ID="MOV0001" Asset_Class="title" Creation_Date="2025-07-14T12:00:00Z"/>
+    <App_Data App="MOD" Name="Title" Value="My Cool Movie"/>
+  </Metadata>
+
+  <Asset>
+    <Metadata>
+      <AMS Asset_ID="MOV0001-MAIN" Asset_Class="movie" Creation_Date="2025-07-14T12:00:00Z"/>
+      <App_Data App="MOD" Name="Type" Value="video"/>
+    </Metadata>
+  </Asset>
+
+  <Asset>
+    <Metadata>
+      <AMS Asset_ID="MOV0001-POSTER" Asset_Class="poster" Creation_Date="2025-07-14T12:00:00Z"/>
+      <App_Data App="MOD" Name="Resolution" Value="1920x1080"/>
+    </Metadata>
+  </Asset>
+</ADI>
+

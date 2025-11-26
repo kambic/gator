@@ -1,0 +1,26 @@
+[Unit]
+Description=Celery worker for CMS
+After=network.target redis-server.service
+
+[Service]
+Type=simple
+User={{ deploy_user }}
+Group={{ deploy_group }}
+WorkingDirectory={{ app_path }}
+Environment="PATH={{ app_path }}/venv/bin"
+Environment="DJANGO_SETTINGS_MODULE={{ django_settings_module }}"
+Environment="CELERY_BROKER_URL={{ celery_broker_url }}"
+Environment="CELERY_RESULT_BACKEND={{ celery_result_backend }}"
+
+ExecStart={{ app_path }}/venv/bin/celery \
+  -A cms.celery.app worker \
+  --loglevel={{ celery_log_level }} \
+  --concurrency={{ celery_concurrency }} \
+  --hostname=worker@%h
+
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

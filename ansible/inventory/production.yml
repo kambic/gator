@@ -1,0 +1,11 @@
+vidra:
+  hosts:
+    bpl-vidra-03.ts.telekom.si:
+      http_port: 80
+      allowed_hosts: ["bpl-vidra-03.ts.telekom.si"]
+      base_url: "http://bpl-vidra-03.ts.telekom.si/"
+      frontend_host: "{{ base_url }}"
+      db: "postgres://vidra:vidra@bpl-vidra-03.ts.telekom.si:5432/alligator"
+      git_token : "glpat-ZQVyKzujQiwKsy0mdyr7pG86MQp1Om5oCA.01.0y1x0otc2"
+#  vars:
+#    ansible_user: my_server_user

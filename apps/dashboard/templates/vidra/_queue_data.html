@@ -1,0 +1,46 @@
+{% load json_tags %}
+<div id="queue-data" x-data="{ tab: 'active' }">
+  <div class="tabs">
+    <span class="tab" :class="{ 'active-tab': tab === 'active' }" @click="tab = 'active'">Active</span>
+    <span class="tab" :class="{ 'active-tab': tab === 'scheduled' }" @click="tab = 'scheduled'">Scheduled</span>
+    <span class="tab" :class="{ 'active-tab': tab === 'reserved' }" @click="tab = 'reserved'">Reserved</span>
+  </div>
+
+  <div class="content">
+    <template x-if="tab === 'active'">
+      <div>
+        <h2>Active Tasks</h2>
+        <ul>
+          {% for key, val in active.items %}
+            <li>  {{ key }}: {{ val }}</li>
+          {% endfor %}
+        </ul>
+
+      </div>
+    </template>
+
+    <template x-if="tab === 'scheduled'">
+      <div>
+        <h2>Scheduled Tasks</h2>
+        <pre>{{ scheduled }}</pre>
+        <ul>
+          {% for key, val in scheduled.items %}
+            <li>  {{ key }}: {{ val }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </template>
+
+    <template x-if="tab === 'reserved'">
+      <div>
+        <h2>Reserved Tasks</h2>
+        <ul>
+          {% for key, val in reserved.items %}
+            <li>  {{ key }}: {{ val }}</li>
+          {% endfor %}
+        </ul>
+        <pre>{{ reserved }}</pre>
+      </div>
+    </template>
+  </div>
+</div>

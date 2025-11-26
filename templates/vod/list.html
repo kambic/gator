@@ -1,0 +1,97 @@
+{% extends 'vod/base.html' %} {% block content %}
+
+<!-- Alpine.js Application Root -->
+  <div
+    x-data="{
+            count: 0,
+            limit: 10,
+
+            increment() {
+            if (this.count < this.limit) {
+            this.count++;
+            }
+            },
+
+            decrement() {
+            if (this.count > -this.limit) {
+            this.count--;
+            }
+            },
+
+            reset() {
+            this.count = 0;
+            },
+
+            displayClass() {
+            if (this.count > 0) {
+            return 'text-green-600 bg-green-50';
+            } else if (this.count < 0) {
+            return 'text-red-600 bg-red-50';
+            } else {
+            return 'text-gray-800 bg-gray-100';
+            }
+            },
+
+            isLimitReached() {
+            return this.count >= this.limit || this.count <= -this.limit;
+            }
+
+            }"
+    class="bg-white shadow-2xl rounded-xl p-8 w-full max-w-md transform transition duration-500 hover:scale-[1.02]"
+  >
+    <h1 class="text-3xl font-extrabold text-indigo-700 mb-6 text-center">
+      Alpine.js Counter
+    </h1>
+    <p class="text-sm text-gray-500 mb-8 text-center">
+      This application uses Alpine.js for reactive state management directly in
+      HTML.
+    </p>
+
+  <!-- Display -->
+    <div
+      x-text="count"
+      :class="displayClass()"
+      class="text-6xl font-black mb-10 text-center rounded-lg p-6 transition-all duration-300"
+    >
+    <!-- Count value is rendered here -->
+    </div>
+
+  <!-- Controls -->
+    <div class="flex space-x-4">
+      <button
+        @click="decrement()"
+        :disabled="count <= -limit"
+        class="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition duration-150 active:scale-95 disabled:opacity-50"
+      >
+        Subtract
+      </button>
+      <button
+        @click="increment()"
+        :disabled="count >= limit"
+        class="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition duration-150 active:scale-95 disabled:opacity-50"
+      >
+        Add
+      </button>
+    </div>
+
+  <!-- Reset Button -->
+    <div class="mt-4">
+      <button
+        @click="reset()"
+        class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 rounded-lg transition duration-150 active:scale-[0.99]"
+      >
+        Reset
+      </button>
+    </div>
+
+  <!-- Limit Message -->
+    <template x-if="isLimitReached()">
+      <p
+        class="mt-4 text-center text-sm font-medium text-amber-600 bg-amber-100 p-2 rounded-lg"
+      >
+        Maximum/Minimum count reached! (Limit is <span x-text="limit"></span>)
+      </p>
+    </template>
+  </div>
+
+{% endblock %}

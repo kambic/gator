@@ -1,0 +1,21 @@
+---
+- name: reload systemd
+  systemd:
+    daemon_reload: yes
+  become: yes
+
+- name: restart celery worker
+  systemd:
+    name: "celery-cms@{{ item.key }}.service"
+    state: restarted
+  loop: "{{ celery_queues | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  become: yes
+  when: item.value is defined
+
+- name: restart celerybeat
+  systemd:
+    name: celerybeat-cms
+    state: restarted
+  become: yes

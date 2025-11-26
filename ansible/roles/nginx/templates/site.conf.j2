@@ -1,0 +1,41 @@
+upstream {{ app_name }}_wsgi_server {
+
+  server {{ bind_url }} fail_timeout=0;
+}
+
+server {
+    listen 7070;
+    listen 80;
+    server_name {{ allowed_hosts }};
+
+    access_log /var/log/nginx/gator.access.log;
+    error_log /var/log/nginx/gator.error.log;
+
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+
+    location /static/ {
+        autoindex on;
+        alias {{ app_path }}/staticfiles/;
+    }
+
+    location /media/ {
+        alias {{ app_path }}/media/;
+    }
+
+
+    location /pgadmin4/ {
+        proxy_set_header X-Script-Name /pgadmin4;
+        proxy_set_header Host $host;
+        proxy_pass http://localhost:5050/;
+        proxy_redirect off;
+    }
+
+    location / {
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_pass http://localhost:7777;
+    }
+}

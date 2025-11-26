@@ -1,0 +1,268 @@
+{% load static django_vite django_htmx %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Django Admin Dashboard (Flowbite, Tailwind, Alpine)</title>
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="{% static 'vendor/fontawesome-free/css/all.min.css' %}"
+    />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"
+    ></script>
+    {% htmx_script %} {% vite_hmr_client %}
+    {% vite_asset 'static/vod/js/main.js' %}
+
+    <style>
+      /* Optional: Hide Alpine initialization flash */
+      [x-cloak] {
+          display: none !important;
+      }
+
+      /* Custom scrollbar style for dashboard aesthetics */
+      .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+      }
+
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+          background-color: #d1d5db; /* gray-300 */
+          border-radius: 4px;
+      }
+
+      .custom-scrollbar::-webkit-scrollbar-track {
+          background-color: #f3f4f6; /* gray-100 */
+      }
+
+      body {
+          font-family: "Inter", sans-serif;
+      }
+
+      /* FA icon styling to match previous SVG size and color */
+      .sidebar-icon {
+          @apply w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white;
+      }
+
+      .logo-icon {
+          @apply w-6 h-6 text-primary-600;
+      }
+    </style>
+  </head>
+  <body
+    hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
+    class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen flex flex-col"
+    x-data="{ sidebarOpen: false, darkMode: localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches) }"
+    x-init="
+            if (darkMode) document.documentElement.classList.add('dark');
+            $watch('darkMode', value => {
+            document.documentElement.classList.toggle('dark', value);
+            localStorage.theme = value ? 'dark' : 'light';
+            });
+           "
+    :class="{ 'dark': darkMode }"
+  >
+    <!-- Mobile Overlay -->
+    <div
+      x-show="sidebarOpen"
+      @click="sidebarOpen = false"
+      x-transition.opacity
+      class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+      x-cloak
+    ></div>
+
+    <!-- Sidebar -->
+    <aside
+      id="sidebar"
+      :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+      class="fixed top-0 left-0 z-50 w-64 h-full bg-white dark:bg-gray-800 shadow-2xl transition-transform duration-300 ease-in-out lg:translate-x-0 lg:shadow-lg"
+      aria-label="Sidebar"
+    >
+      <div class="h-full px-4 py-6 overflow-y-auto bg-white dark:bg-gray-800">
+        <!-- Logo -->
+        <a href="{% url 'admin:index' %}" class="flex items-center mb-10 ps-2">
+          <i class="fas fa-gem text-blue-600 text-2xl"></i>
+          <span class="ml-3 text-2xl font-bold text-gray-800 dark:text-white"
+          >DjangoFlow</span
+          >
+        </a>
+
+        <!-- Navigation -->
+        <nav class="space-y-2 font-medium text-sm">
+          <a
+            href="#"
+            class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 group"
+          >
+            <i
+              class="fas fa-th-large w-5 h-5 text-gray-500 group-hover:text-blue-600"
+            ></i>
+            <span class="ml-3">Dashboard</span>
+          </a>
+
+          <!-- Dropdown Example -->
+          <div x-data="{ open: false }">
+            <button
+              @click="open = !open"
+              class="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+            >
+              <div class="flex items-center">
+                <i class="fas fa-file-alt w-5 h-5 text-gray-500"></i>
+                <span class="ml-3">Tasks</span>
+              </div>
+              <i :class="open ? 'fa-chevron-up' : 'fa-chevron-down'" class="fas text-xs transition-transform"></i>
+            </button>
+            <div
+              x-show="open"
+              x-collapse
+              x-cloak
+              class="ml-9 mt-1 space-y-1 border-l-2 border-gray-300 dark:border-gray-600 pl-4"
+            >
+              <a
+                href="#"
+                class="block py-2 text-gray-600 dark:text-gray-400 hover:text-blue-600"
+              >Settings</a
+              >
+              <a
+                href="#"
+                class="block py-2 text-gray-600 dark:text-gray-400 hover:text-blue-600"
+              >Users</a
+              >
+              <a
+                href="#"
+                class="block py-2 text-gray-600 dark:text-gray-400 hover:text-blue-600"
+              >Pricing</a
+              >
+            </div>
+          </div>
+
+          <a
+            href="{% url 'vod:files' %}"
+            class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 group"
+          >
+            <i
+              class="fas fa-box w-5 h-5 text-gray-500 group-hover:text-blue-600"
+            ></i>
+            <span class="ml-3">Files</span>
+          </a>
+          <a
+            href="#"
+            class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 group"
+          >
+            <i
+              class="fas fa-lock w-5 h-5 text-gray-500 group-hover:text-blue-600"
+            ></i>
+            <span class="ml-3">Watch</span>
+          </a>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Main Layout -->
+    <div class="lg:ml-64 min-h-screen flex flex-col">
+      <!-- Top Bar -->
+      <header
+        class="fixed top-0 left-0 right-0 lg:left-64 z-40 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm"
+      >
+        <div class="px-4 py-3 flex items-center justify-between">
+          <div class="flex items-center">
+            <!-- Mobile Menu Button -->
+            <button
+              @click="sidebarOpen = !sidebarOpen"
+              class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 lg:hidden"
+            >
+              <i class="fas fa-bars text-xl"></i>
+            </button>
+
+            <!-- Logo (mobile only when sidebar closed) -->
+            <a href="#" class="hidden lg:flex items-center ml-4">
+              <i class="fas fa-gem text-blue-600 text-2xl"></i>
+              <span class="ml-2 text-xl font-bold">DjangoFlow</span>
+            </a>
+          </div>
+
+          <div class="flex items-center space-x-4">
+            <!-- Dark Mode Toggle -->
+            <button
+              @click="darkMode = !darkMode"
+              class="p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+            >
+              <template x-if="!darkMode">
+                <i class="fas fa-moon text-gray-600"></i>
+              </template>
+              <template x-if="darkMode">
+                <i class="fas fa-sun text-yellow-400"></i>
+              </template>
+            </button>
+
+            <!-- User Dropdown -->
+            <div class="relative" x-data="{ open: false }">
+              <button
+                @click="open = !open"
+                class="flex items-center focus:outline-none"
+              >
+                <img
+                  src="https://placehold.co/40x40/3b82f6/ffffff?text=U"
+                  alt="User"
+                  class="w-9 h-9 rounded-full ring-2 ring-gray-300 dark:ring-gray-600"
+                />
+              </button>
+
+              <div
+                x-show="open"
+                @click.away="open = false"
+                x-transition
+                class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg border dark:border-gray-700 overflow-hidden"
+              >
+                <div class="px-4 py-3 border-b dark:border-gray-700">
+                  <p class="text-sm font-semibold">Django User</p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                    {{ user.email|default:"user@example.com" }}
+                  </p>
+                </div>
+                <div class="py-1">
+                  <a
+                    href="#"
+                    class="block px-4 py-2.5 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >Profile</a
+                  >
+                  <a
+                    href="#"
+                    class="block px-4 py-2.5 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >Settings</a
+                  >
+                  <hr class="dark:border-gray-700" />
+                  <a
+                    href="{% url 'logout' %}"
+                    class="block px-4 py-2.5 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >Sign out</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="flex-1 pt-20 p-6">
+        <div class="max-w-8xl mx-auto">
+          {% block content %}
+            <!-- Page content goes here -->
+          {% endblock %}
+        </div>
+      </main>
+
+      <!-- Optional Footer -->
+      <footer
+        class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4 px-6 text-center text-sm text-gray-500"
+      >
+        © 2025 DjangoFlow. All rights reserved.
+      </footer>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

@@ -1,0 +1,37 @@
+{
+  "name": "alligator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "vite.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.17",
+    "daisyui": "^5.4.5",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "0.7.1",
+    "prettier-plugin-twig-melody": "^0.4.6",
+    "tailwindcss": "^4.1.17",
+    "vite": "^7.2.1"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.17",
+    "alpinejs": "^3.15.2",
+    "flowbite": "^4.0.1",
+    "shaka-player": "^4.16.9",
+    "video.js": "^8.23.4",
+    "videojs-contrib-quality-levels": "^4.1.0",
+    "videojs-hls-quality-selector": "^2.0.0",
+    "videojs-hotkeys": "^0.2.30",
+    "videojs-mobile-ui": "^1.1.1"
+  }
+}

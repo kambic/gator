@@ -1,0 +1,311 @@
+{% extends "vod/base.html" %}
+{% block title %}Dashboard - MyAdmin {% endblock%}
+{% block content %}
+<h1 class="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+  Analytics Overview
+</h1>
+
+<!-- STATS CARDS (Flowbite Style) -->
+<div class="grid grid-cols-1 gap-4 mb-6 md:grid-cols-2 lg:grid-cols-4">
+  <!-- Card 1: Users -->
+  <div class="p-5 bg-white rounded-lg shadow dark:bg-gray-800">
+    <div class="flex items-center">
+      <div class="flex-shrink-0">
+        <span
+          class="text-2xl font-bold leading-none text-gray-900 dark:text-white"
+        >1,245</span
+          >
+          <h3 class="text-base font-normal text-gray-500 dark:text-gray-400">
+            Total Users
+          </h3>
+        </div>
+        <div
+          class="flex items-center justify-end flex-1 text-green-500 dark:text-green-400 ms-3"
+        >
+          <svg
+            class="w-3 h-3 me-1"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 10l7-7m0 0l7 7m-7-7v18"
+            ></path>
+          </svg>
+          <span class="text-sm font-semibold">12.5%</span>
+        </div>
+      </div>
+    </div>
+
+  <!-- Card 2: Revenue -->
+    <div class="p-5 bg-white rounded-lg shadow dark:bg-gray-800">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <span
+            class="text-2xl font-bold leading-none text-gray-900 dark:text-white"
+          >$45,678</span
+            >
+            <h3 class="text-base font-normal text-gray-500 dark:text-gray-400">
+              Total Revenue
+            </h3>
+          </div>
+          <div
+            class="flex items-center justify-end flex-1 text-red-600 dark:text-red-400 ms-3"
+          >
+            <svg
+              class="w-3 h-3 me-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+              ></path>
+            </svg>
+            <span class="text-sm font-semibold">3.2%</span>
+          </div>
+        </div>
+      </div>
+
+  <!-- Card 3: Orders -->
+      <div class="p-5 bg-white rounded-lg shadow dark:bg-gray-800">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <span
+              class="text-2xl font-bold leading-none text-gray-900 dark:text-white"
+            >890</span
+              >
+              <h3 class="text-base font-normal text-gray-500 dark:text-gray-400">
+                New Orders
+              </h3>
+            </div>
+            <div
+              class="flex items-center justify-end flex-1 text-green-500 dark:text-green-400 ms-3"
+            >
+              <svg
+                class="w-3 h-3 me-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 10l7-7m0 0l7 7m-7-7v18"
+                ></path>
+              </svg>
+              <span class="text-sm font-semibold">22.8%</span>
+            </div>
+          </div>
+        </div>
+
+  <!-- Card 4: Page Views -->
+        <div class="p-5 bg-white rounded-lg shadow dark:bg-gray-800">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <span
+                class="text-2xl font-bold leading-none text-gray-900 dark:text-white"
+              >8.5M</span
+                >
+                <h3 class="text-base font-normal text-gray-500 dark:text-gray-400">
+                  Page Views
+                </h3>
+              </div>
+              <div
+                class="flex items-center justify-end flex-1 text-red-600 dark:text-red-400 ms-3"
+              >
+                <svg
+                  class="w-3 h-3 me-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                  ></path>
+                </svg>
+                <span class="text-sm font-semibold">0.5%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+<!-- CHARTS & RECENT ACTIVITY (Grid Layout) -->
+        <div class="grid grid-cols-1 gap-6 mb-6 lg:grid-cols-3">
+  <!-- Chart 1: Sales Performance (Placeholder) -->
+          <div
+            class="col-span-1 lg:col-span-2 p-4 bg-white rounded-lg shadow dark:bg-gray-800"
+          >
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              Sales Performance (Chart Placeholder)
+            </h2>
+            <div
+              class="flex items-center justify-center h-64 bg-gray-100 rounded-lg dark:bg-gray-700/50 text-gray-400 dark:text-gray-500"
+            >
+              <p>Bar/Line Chart Integration goes here (e.g., using Chart.js)</p>
+            </div>
+            <div
+              class="flex justify-between items-center mt-4 border-t pt-4 dark:border-gray-700"
+            >
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                Data updated 5 minutes ago.
+              </p>
+              <button
+                class="text-sm text-primary-600 hover:underline dark:text-primary-500"
+              >
+                View Report
+              </button>
+            </div>
+          </div>
+
+  <!-- Recent Activity (Flowbite Card Style) -->
+          <div class="col-span-1 p-4 bg-white rounded-lg shadow dark:bg-gray-800">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              Recent Activity
+            </h2>
+            <ol class="relative border-s border-gray-200 dark:border-gray-700">
+              <li class="mb-6 ms-4">
+                <div
+                  class="absolute w-3 h-3 bg-primary-300 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-800 dark:bg-primary-600"
+                ></div>
+                <time
+                  class="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500"
+                >1 hour ago</time
+                  >
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    Order #1004 Processed
+                  </h3>
+                  <p class="text-base font-normal text-gray-500 dark:text-gray-400">
+                    Product A shipped to customer John D.
+                  </p>
+                </li>
+                <li class="mb-6 ms-4">
+                  <div
+                    class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-800 dark:bg-gray-700"
+                  ></div>
+                  <time
+                    class="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500"
+                  >5 hours ago</time
+                    >
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                      New User Registered
+                    </h3>
+                    <p class="text-base font-normal text-gray-500 dark:text-gray-400">
+                      Welcome Jane Smith to the platform.
+                    </p>
+                  </li>
+                  <li class="ms-4">
+                    <div
+                      class="absolute w-3 h-3 bg-red-400 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-800 dark:bg-red-500"
+                    ></div>
+                    <time
+                      class="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500"
+                    >1 day ago</time
+                      >
+                      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        API Key Expired Warning
+                      </h3>
+                      <p class="text-base font-normal text-gray-500 dark:text-gray-400">
+                        Check production settings immediately.
+                      </p>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+
+<!-- DATATABLE (Flowbite Table Component) -->
+              <div class="bg-white rounded-lg shadow dark:bg-gray-800 p-4">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                  Top Selling Products
+                </h2>
+                <div class="relative overflow-x-auto rounded-lg">
+                  <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead
+                      class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+                    >
+                      <tr>
+                        <th scope="col" class="px-6 py-3">Product Name</th>
+                        <th scope="col" class="px-6 py-3">Category</th>
+                        <th scope="col" class="px-6 py-3">Quantity</th>
+                        <th scope="col" class="px-6 py-3">Price</th>
+                        <th scope="col" class="px-6 py-3">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                      >
+                        <th
+                          scope="row"
+                          class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                        >
+                          Django ORM Pro Book
+                        </th>
+                        <td class="px-6 py-4">Software</td>
+                        <td class="px-6 py-4">450</td>
+                        <td class="px-6 py-4">$79.99</td>
+                        <td class="px-6 py-4">
+                          <span
+                            class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300"
+                          >Active</span
+                            >
+                          </td>
+                        </tr>
+                        <tr
+                          class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                        >
+                          <th
+                            scope="row"
+                            class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                          >
+                            Python Masterclass Course
+                          </th>
+                          <td class="px-6 py-4">E-Learning</td>
+                          <td class="px-6 py-4">320</td>
+                          <td class="px-6 py-4">$299.00</td>
+                          <td class="px-6 py-4">
+                            <span
+                              class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-yellow-900 dark:text-yellow-300"
+                            >New</span
+                              >
+                            </td>
+                          </tr>
+                          <tr
+                            class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600"
+                          >
+                            <th
+                              scope="row"
+                              class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                            >
+                              Tailwind V4 Starter Kit
+                            </th>
+                            <td class="px-6 py-4">Templates</td>
+                            <td class="px-6 py-4">180</td>
+                            <td class="px-6 py-4">$24.99</td>
+                            <td class="px-6 py-4">
+                              <span
+                                class="bg-primary-100 text-primary-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-primary-900 dark:text-primary-300"
+                              >In Stock</span
+                                >
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    {% endblock %}

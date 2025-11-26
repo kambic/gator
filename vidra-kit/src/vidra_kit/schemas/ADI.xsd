@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+
+    <xs:import namespace="" schemaLocation="Metadata.xsd"/>
+    <xs:import namespace="" schemaLocation="Content.xsd"/>
+
+    <xs:element name="ADI">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Asset" type="AssetType"/>
+            </xs:sequence>
+            <xs:attribute name="Version" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="AssetType">
+        <xs:sequence>
+            <xs:element name="Metadata" type="MetadataType"/>
+            <xs:element name="Asset" type="AssetType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Content" type="ContentType" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

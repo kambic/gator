@@ -1,0 +1,36 @@
+---
+
+# Virtualenv settings.
+enable_deadsnakes_ppa: false
+recreate_virtualenv: false
+requirements_file: "requirements.txt"
+python_version: "3.12"
+
+# Application settings.
+venv_path: "{{ app_path }}/venv"
+project_path: "{{ app_path }}"
+application_log_dir: "{{ app_path }}/logs"
+application_log_file: "{{ application_log_dir }}/gunicorn_supervisor.log"
+pip_use_upgrade_flag: false
+
+
+# Gunicorn settings.
+gunicorn_user: "{{ app_name }}"
+gunicorn_group: vidra
+app_user : "{{ gunicorn_user }}"
+
+# Nginx settings.
+#nginx_static_dir: "{{ virtualenv_path }}/static/"
+#nginx_media_dir: "{{ virtualenv_path }}/media/"
+
+
+# Django environment variables.
+#django_environment:
+#  DJANGO_SETTINGS_MODULE: "{{ django_settings_file }}"
+#  DJANGO_SECRET_KEY: "{{ django_secret_key }}"
+#  MEDIA_ROOT: "{{ nginx_media_dir }}"
+#  STATIC_ROOT: "{{ nginx_static_dir }}"
+#  DATABASE_NAME: "{{ db_name }}"
+#  DATABASE_USER: "{{ db_user }}"
+#  DATABASE_PASSWORD: "{{ db_password }}"
+#  BROKER_URL: "{{ broker_url }}"

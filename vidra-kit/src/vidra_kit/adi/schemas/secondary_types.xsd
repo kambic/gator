@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="www.w3.org" 
+           targetNamespace="http://example.com/secondary" 
+           elementFormDefault="qualified">
+
+    <xs:complexType name="SecondaryType">
+        <xs:attribute name="Source" type="xs:string" use="required"/>
+    </xs:complexType>
+</xs:schema>

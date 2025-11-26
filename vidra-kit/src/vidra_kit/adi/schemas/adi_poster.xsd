@@ -1,0 +1,34 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+  <xs:element name="Asset">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Metadata">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="AMS">
+                <xs:complexType>
+                  <xs:attribute name="Asset_ID" type="xs:string" use="required"/>
+                  <xs:attribute name="Asset_Class" type="xs:string" use="required"/>
+                  <xs:attribute name="Asset_Name" type="xs:string"/>
+                  <xs:attribute name="Creation_Date" type="xs:dateTime"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="App_Data" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="App" type="xs:string" use="required"/>
+                  <xs:attribute name="Name" type="xs:string" use="required"/>
+                  <xs:attribute name="Value" type="xs:string" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

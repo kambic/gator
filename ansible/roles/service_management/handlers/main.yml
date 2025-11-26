@@ -1,0 +1,18 @@
+# roles/service_management/handlers/main.yml
+
+- name: Restart Gunicorn service
+  ansible.builtin.systemd:
+    name: gunicorn
+    state: restarted
+    daemon_reload: yes
+  tags:
+    - restart_gunicorn
+    - services
+
+- name: Reload Nginx configuration
+  ansible.builtin.systemd:
+    name: nginx
+    state: reloaded
+  tags:
+    - restart_nginx
+    - services
