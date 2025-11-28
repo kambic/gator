@@ -1,0 +1,108 @@
+<div class="drawer-side z-50">
+  <label for="" class="drawer-overlay" @click="sidebarOpen = false"></label>
+
+  <aside
+    class="bg-base-100 min-h-full flex flex-col shadow-xl transition-all duration-300"
+    :class="sidebarCompact ? 'w-16' : 'w-50'"
+  >
+    <!-- Header -->
+    <div class="p-4 border-b border-base-300 flex items-center justify-between">
+      <a
+        href="{% url 'core:index' %}"
+        @click="closeSidebarOnMobile()"
+        class="flex items-center gap-3 font-bold text-lg overflow-hidden transition-all"
+        :class="sidebarCompact ? 'w-0 opacity-0' : 'w-auto opacity-100'"
+      >
+        <i class="fas fa-cube text-primary text-2xl"></i>
+        <span class="whitespace-nowrap">MyApp</span>
+      </a>
+
+      <button
+        @click="toggleSidebarCompact()"
+        class="btn btn-ghost btn-square btn-sm hover:bg-base-300"
+        :title="sidebarCompact ? 'Expand' : 'Collapse'"
+      >
+        <i :class="sidebarCompact ? 'fas fa-angle-double-right' : 'fas fa-angle-double-left'"></i>
+      </button>
+    </div>
+
+    <!-- Menu -->
+    <ul class="menu p-2 flex-1 text-base-content">
+      <li class="mb-1">
+        <a href="{% url 'core:index' %}"
+           @click="closeSidebarOnMobile()"
+           :class="{ 'active bg-primary text-white': $el.href === location.href }"
+           class="rounded-lg gap-3"
+           :title="sidebarCompact ? 'Dashboard' : ''"
+        >
+          <i class="fas fa-tachometer-alt w-5"></i>
+          <span :class="sidebarCompact ? 'hidden' : 'block'">Dashboard</span>
+        </a>
+      </li>
+
+      <li class="mb-1">
+        <a href="{% url 'core:edgeware-list' %}"
+           @click="closeSidebarOnMobile()"
+           :class="{ 'active bg-primary text-white': $el.href === location.href }"
+           class="rounded-lg gap-3"
+           :title="sidebarCompact ? 'Edgeware' : ''"
+        >
+          <i class="fas fa-microchip w-5"></i>
+          <span :class="sidebarCompact ? 'hidden' : 'block'">Edgeware</span>
+        </a>
+      </li>
+
+      <li class="mb-1">
+        <a href="{% url 'core:shaka' %}"
+           @click="closeSidebarOnMobile()"
+           :class="{ 'active bg-primary text-white': $el.href === location.href }"
+           class="rounded-lg gap-3"
+           :title="sidebarCompact ? 'Shaka Player' : ''"
+        >
+          <i class="fas fa-play-circle w-5"></i>
+          <span :class="sidebarCompact ? 'hidden' : 'block'">Shaka Player</span>
+        </a>
+      </li>
+
+      <li class="mb-1">
+        <a href="{% url 'core:file_explorer' %}"
+           @click="closeSidebarOnMobile()"
+           :class="{ 'active bg-primary text-white': $el.href === location.href }"
+           class="rounded-lg gap-3"
+           :title="sidebarCompact ? 'Files' : ''"
+        >
+          <i class="fas fa-folder-open w-5"></i>
+          <span :class="sidebarCompact ? 'hidden' : 'block'">Files</span>
+        </a>
+      </li>
+
+      <div class="my-4 border-t border-base-300" :class="sidebarCompact ? 'mx-2' : 'mx-4'"></div>
+
+      <li class="mb-1">
+        <a @click="modalOpen = true; closeSidebarOnMobile()"
+           class="rounded-lg gap-3"
+           :title="sidebarCompact ? 'Settings' : ''"
+        >
+          <i class="fas fa-cog w-5"></i>
+          <span :class="sidebarCompact ? 'hidden' : 'block'">Settings</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="{% url 'logout' %}"
+           @click="closeSidebarOnMobile()"
+           class="rounded-lg gap-3 text-error hover:bg-error hover:text-white"
+           :title="sidebarCompact ? 'Logout' : ''"
+        >
+          <i class="fas fa-sign-out-alt w-5"></i>
+          <span :class="sidebarCompact ? 'hidden' : 'block'">Logout</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="p-3 border-t border-base-300 text-xs text-center text-base-content/60"
+         :class="sidebarCompact ? 'hidden' : 'block'">
+      © 2025 MyApp
+    </div>
+  </aside>
+</div>

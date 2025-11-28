@@ -1,0 +1,45 @@
+<li>
+  {% if node.is_folder %}
+{#    <details {{ node.children.exists|yesno:"open," }}>#}
+    <details>
+      <summary
+        class="cursor-pointer"
+        hx-get="{% url 'core:load_children' node.id %}"
+        hx-trigger="click"
+        hx-target="next ul"
+        hx-swap="outerHTML swap:0.3s"
+        hx-indicator="#loading-{{ node.id }}">
+
+        <i class="fa-solid fa-folder text-yellow-500 mr-2"></i>
+        {{ node.name }}
+        <span id="loading-{{ node.id }}" class="htmx-indicator">
+          <i class="fa-solid fa-spinner fa-spin ml-2"></i>
+        </span>
+      </summary>
+
+      {# Children will be loaded here via HTMX #}
+      {% if node.children.exists %}
+        <ul>
+          {% for child in node.children.all %}
+            {% include "core/partials/_node.html" with node=child %}
+          {% endfor %}
+        </ul>
+      {% else %}
+        <ul><li class="text-xs text-gray-500 pl-8 py-1">Empty folder</li></ul>
+      {% endif %}
+    </details>
+  {% else %}
+    <a class="flex items-center">
+      {% if node.name|lower|slice:"-4:" in ".pdf" %}
+        <i class="fa-solid fa-file-pdf text-red-500 mr-2"></i>
+      {% elif node.name|lower|slice:"-4:" in ".png,.jpg,.jpeg,.gif,.webp" %}
+        <i class="fa-regular fa-image text-blue-500 mr-2"></i>
+      {% elif node.name|lower|slice:"-4:" in ".psd" %}
+        <i class="fa-solid fa-file-lines text-purple-500 mr-2"></i>
+      {% else %}
+        <i class="fa-solid fa-file mr-2"></i>
+      {% endif %}
+      {{ node.name }}
+    </a>
+  {% endif %}
+</li>

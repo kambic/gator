@@ -1,0 +1,390 @@
+{
+	"version": "1.116",
+	"name": "NEO-DASH-VOD",
+	"description": "NEO DASH VOD",
+	"processing_resources_profile_id": "neo-1",
+	"distributed_transcoding": {
+		"chunk_number": 6
+	},
+	"thumbnails": {
+		"thumbnail_1": {
+			"track": "video.180p",
+			"paths": [
+				"smb://ftpvydra@isi-s19.ts.telekom.si/ftpvydra/test-staging/k8s-test-NE-BRISI/avatar_the_way_of_water_1727372175/dash-test-90/thumbs_$Number$.jpg"
+			],
+			"picture_selection_mode": {
+				"period": 10
+			},
+			"size": {
+				"width": 240,
+				"height": 180
+			},
+			"mosaic": {
+				"number_of_rows": 10,
+				"number_of_columns": 10,
+				"vtt_file": true
+			}
+		}
+	},
+	"assets": {
+		"input_1": "smb://ftpvydra@isi-s19.ts.telekom.si/ftpvydra/test-staging/k8s-test-NE-BRISI/avatar_the_way_of_water_1727372175/VU09547341.ts"
+	},
+	"inputs": [
+		{
+			"video": {
+				"input_1": {
+					"asset": "input_1"
+				}
+			},
+			"audio": {
+				"input_1": [
+					{
+						"asset": "input_1"
+					}
+				]
+			},
+			"trimmings": {
+				"start": {
+					"timestamp": 500
+				},
+				"end": {
+					"timestamp": 1500
+				}
+			}
+		}
+	],
+	"track_configurations": {
+		"avc": {
+			"1080p25": {
+				"frame_size": {
+					"width": 1920,
+					"height": 1080
+				},
+				"frame_type": "progressive",
+				"bitrate": 5100000,
+				"bitrate_max": 5100000,
+				"frame_rate": [
+					25,
+					1
+				],
+				"display_aspect_ratio": "pass-through",
+				"frame_resize_type": "bilinear",
+				"frame_rate_resampling_type": "duplication",
+				"deinterlacer": "adaptive",
+				"rate_control": "variable bitrate",
+				"quality_speed": "default",
+				"profile": "high",
+				"level": "4.2",
+				"gop_size": {
+					"unit": "frame",
+					"min": 37,
+					"max": 72
+				},
+				"advanced": {
+					"encoding_mode": "auto",
+					"entropy": "cabac",
+					"open_gop": false,
+					"hdr_sei_metadata": false,
+					"multiple_parameter_sets": false,
+					"b_frames": {
+						"min": 3,
+						"max": 5
+					}
+				}
+			},
+			"720p": {
+				"frame_size": {
+					"width": 1280,
+					"height": 720
+				},
+				"frame_type": "progressive",
+				"bitrate": 3500000,
+				"bitrate_max": 3500000,
+				"frame_rate": [
+					25,
+					1
+				],
+				"display_aspect_ratio": "pass-through",
+				"frame_resize_type": "bilinear",
+				"frame_rate_resampling_type": "duplication",
+				"deinterlacer": "adaptive",
+				"rate_control": "variable bitrate",
+				"quality_speed": "default",
+				"profile": "high",
+				"level": "4.2",
+				"gop_size": {
+					"unit": "frame",
+					"min": 37,
+					"max": 72
+				},
+				"advanced": {
+					"encoding_mode": "auto",
+					"entropy": "cabac",
+					"open_gop": false,
+					"hdr_sei_metadata": false,
+					"multiple_parameter_sets": false,
+					"b_frames": {
+						"min": 3,
+						"max": 5
+					}
+				}
+			},
+			"576p": {
+				"frame_size": {
+					"width": 1024,
+					"height": 576
+				},
+				"frame_type": "progressive",
+				"bitrate": 2500000,
+				"bitrate_max": 2500000,
+				"frame_rate": [
+					25,
+					1
+				],
+				"display_aspect_ratio": "pass-through",
+				"frame_resize_type": "bilinear",
+				"frame_rate_resampling_type": "duplication",
+				"deinterlacer": "adaptive",
+				"rate_control": "variable bitrate",
+				"quality_speed": "default",
+				"profile": "high",
+				"level": "4.2",
+				"gop_size": {
+					"unit": "frame",
+					"min": 37,
+					"max": 72
+				},
+				"advanced": {
+					"encoding_mode": "auto",
+					"entropy": "cabac",
+					"open_gop": false,
+					"hdr_sei_metadata": false,
+					"multiple_parameter_sets": false,
+					"b_frames": {
+						"min": 3,
+						"max": 5
+					}
+				}
+			},
+			"480p": {
+				"frame_size": {
+					"width": 854,
+					"height": 480
+				},
+				"frame_type": "progressive",
+				"bitrate": 1500000,
+				"bitrate_max": 1500000,
+				"frame_rate": [
+					25,
+					1
+				],
+				"display_aspect_ratio": "pass-through",
+				"frame_resize_type": "bilinear",
+				"frame_rate_resampling_type": "duplication",
+				"deinterlacer": "adaptive",
+				"rate_control": "variable bitrate",
+				"quality_speed": "default",
+				"profile": "main",
+				"level": "3.2",
+				"gop_size": {
+					"unit": "frame",
+					"min": 37,
+					"max": 72
+				},
+				"advanced": {
+					"encoding_mode": "auto",
+					"entropy": "cabac",
+					"open_gop": false,
+					"hdr_sei_metadata": false,
+					"multiple_parameter_sets": false,
+					"b_frames": {
+						"min": 3,
+						"max": 5
+					}
+				}
+			},
+			"360p": {
+				"frame_size": {
+					"width": 640,
+					"height": 360
+				},
+				"frame_type": "progressive",
+				"bitrate": 900000,
+				"bitrate_max": 900000,
+				"frame_rate": [
+					25,
+					1
+				],
+				"display_aspect_ratio": "pass-through",
+				"frame_resize_type": "bilinear",
+				"frame_rate_resampling_type": "duplication",
+				"deinterlacer": "adaptive",
+				"rate_control": "variable bitrate",
+				"quality_speed": "default",
+				"profile": "main",
+				"level": "3.0",
+				"gop_size": {
+					"unit": "frame",
+					"min": 37,
+					"max": 72
+				},
+				"advanced": {
+					"encoding_mode": "auto",
+					"entropy": "cabac",
+					"open_gop": false,
+					"hdr_sei_metadata": false,
+					"multiple_parameter_sets": false,
+					"b_frames": {
+						"min": 3,
+						"max": 5
+					}
+				}
+			},
+			"180p": {
+				"frame_size": {
+					"width": 320,
+					"height": 180
+				},
+				"frame_type": "progressive",
+				"bitrate": 900000,
+				"bitrate_max": 900000,
+				"frame_rate": [
+					25,
+					1
+				],
+				"display_aspect_ratio": "pass-through",
+				"frame_resize_type": "bilinear",
+				"frame_rate_resampling_type": "duplication",
+				"deinterlacer": "adaptive",
+				"rate_control": "variable bitrate",
+				"quality_speed": "default",
+				"profile": "baseline",
+				"level": "2.0",
+				"gop_size": {
+					"unit": "frame",
+					"min": 37,
+					"max": 72
+				},
+				"advanced": {
+					"encoding_mode": "auto",
+					"entropy": "cabac",
+					"open_gop": false,
+					"hdr_sei_metadata": false,
+					"multiple_parameter_sets": false,
+					"b_frames": {
+						"min": 3,
+						"max": 5
+					}
+				}
+			}
+		},
+		"aac": {
+			"audio_1": {
+				"profile": "low_complexity",
+				"bitrate": 128,
+				"layout": "2.0",
+				"advanced_settings": {
+					"midside_stereo": true,
+					"temporal_noise_shaping": true
+				}
+			}
+		},
+		"dolby_digital": {
+			"audio_track_2": {
+				"bitrate": 384,
+				"channel_mode": "5.1"
+			}
+		}
+	},
+	"tracks": {
+		"video": {
+			"1080p25": {
+				"configuration": "avc.1080p25",
+				"input": {
+					"id": "video.input_1"
+				}
+			},
+			"720p": {
+				"configuration": "avc.720p",
+				"input": {
+					"id": "video.input_1"
+				}
+			},
+			"576p": {
+				"configuration": "avc.576p",
+				"input": {
+					"id": "video.input_1"
+				}
+			},
+			"480p": {
+				"configuration": "avc.480p",
+				"input": {
+					"id": "video.input_1"
+				}
+			},
+			"360p": {
+				"configuration": "avc.360p",
+				"input": {
+					"id": "video.input_1"
+				}
+			},
+			"180p": {
+				"configuration": "avc.180p",
+				"input": {
+					"id": "video.input_1"
+				}
+			}
+		},
+		"audio": {
+			"audio_1": {
+				"configuration": "aac.audio_1",
+				"input": {
+					"id": "audio.input_1"
+				}
+			},
+			"audio_track_2": {
+				"configuration": "dolby_digital.audio_track_2",
+				"input": {
+					"id": "audio.input_1"
+				}
+			}
+		}
+	},
+	"outputs": {
+		"dash": {
+			"output_dash_avc": {
+				"output": "smb://ftpvydra@isi-s19.ts.telekom.si/ftpvydra/test-staging/k8s-test-NE-BRISI/avatar_the_way_of_water_1727372175/dash-test-90/manifest.mpd",
+				"profile": "on_demand",
+				"preferential_language_code": "auto",
+				"subtitles_encapsulation": "raw",
+				"tracks": {
+					"audio_1": {
+						"id": "audio.audio_1"
+					},
+					"1080p25": {
+						"id": "video.1080p25"
+					},
+					"720p": {
+						"id": "video.720p"
+					},
+					"576p": {
+						"id": "video.576p"
+					},
+					"480p": {
+						"id": "video.480p"
+					},
+					"360p": {
+						"id": "video.360p"
+					},
+					"180p": {
+						"id": "video.180p"
+					},
+					"audio_track_2": {
+						"id": "audio.audio_track_2"
+					}
+				}
+			}
+		}
+	},
+	"id": "a3196c4e-4b6e-11f0-9ed1-36ff3fe60dbb"
+}

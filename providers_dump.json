@@ -1,0 +1,785 @@
+[
+  {
+    "model": "vod.provider",
+    "pk": 1,
+    "fields": {
+      "active": true,
+      "vidra_task": "vydra.tasks.ingest_package_alteka",
+      "queue": "alteka"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 2,
+    "fields": {
+      "user": 28,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 3,
+    "fields": {
+      "user": 5,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "vydra.tasks.ingest_package_babytv",
+      "queue": "babytv",
+      "provider_fs": "{'username': 'babytv-int', 'password': 'g3kzZI*6sx<f1*m4a2'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 4,
+    "fields": {
+      "user": 7,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "vydra.tasks.ingest_package_blitz",
+      "queue": "blitz",
+      "provider_fs": "{'username': 'blitz-int', 'password': 'e58329bbca45c211e3eb3c328aa89a34'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 5,
+    "fields": {
+      "user": 8,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "vydra.tasks.ingest_package_cinestarpremiere",
+      "queue": "cinestarpremiere",
+      "provider_fs": "{'username': 'cinestarpremiere-int', 'password': 'SQzX]qV@E{fsPr95xm3v^j'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 6,
+    "fields": {
+      "user": 9,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "vydra.tasks.ingest_package_curiositystream",
+      "queue": "curiositystream",
+      "provider_fs": "{'username': 'curiosity-int', 'password': 'XQ9QXtVe'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 7,
+    "fields": {
+      "user": 10,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "vydra.tasks.ingest_package_dvk",
+      "queue": "dvk",
+      "provider_fs": "{'username': 'dvk-int', 'password': 'Z0guhyqnEJMaxjAEZDntuIhA'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 8,
+    "fields": {
+      "user": 11,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "vydra.tasks.ingest_package_epicdrama",
+      "queue": "epicdrama",
+      "provider_fs": "{'username': 'epicdrama-int', 'password': 'resFW9tUDsB7VxBMLYZeosz9'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 9,
+    "fields": {
+      "user": 12,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "vydra.tasks.ingest_adi_hbo",
+      "queue": "hbo",
+      "provider_fs": "{'username': 'hbo-int', 'password': 'hb0-199X'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 10,
+    "fields": {
+      "user": 13,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "HBO On Demand",
+      "vidra_task": "vydra.tasks.ingest_adi_hbo_master",
+      "queue": "hbo_master",
+      "provider_fs": "{'username': 'hbo_master_vydra-int', 'password': 'hbo_master_vydra'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 11,
+    "fields": {
+      "user": 14,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "vydra.tasks.ingest_adi_hustler",
+      "queue": "vydra.tasks.ingest_adi_hustler",
+      "provider_fs": "{'username': 'hustler-int', 'password': 'rhustleal'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 12,
+    "fields": {
+      "user": 15,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "vydra.tasks.ingest_package_kitchentv",
+      "queue": "kitchentv",
+      "provider_fs": "{'username': 'kitchentv-int', 'password': 'P602Sy49KR6YsQB2'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 13,
+    "fields": {
+      "user": 16,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "vydra.tasks.ingest_adi_minimax",
+      "queue": "minimax",
+      "provider_fs": "{'username': 'minimax-int', 'password': 'minimax321'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 14,
+    "fields": {
+      "user": 17,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "vydra.tasks.ingest_package_moonbug",
+      "queue": "vydra.tasks.ingest_package_moonbug",
+      "provider_fs": "{'username': 'moonbug-int', 'password': 'moonbug'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 15,
+    "fields": {
+      "user": 20,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "vydra.tasks.ingest_package_natgeo",
+      "queue": "vydra.tasks.ingest_package_natgeo",
+      "provider_fs": "{'username': 'natgeo-int', 'password': '5GNmo#1LE|xp<Z8S2A'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 16,
+    "fields": {
+      "user": 21,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "vydra.tasks.ingest_adi_noof",
+      "queue": "vydra.tasks.ingest_adi_noof",
+      "provider_fs": "{'username': 'noof-int', 'password': 'foon123'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 17,
+    "fields": {
+      "user": 18,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "vydra.tasks.ingest_adi_pickbox",
+      "queue": "pickbox",
+      "provider_fs": "{'username': 'pickbox-int', 'password': 'pickbox-int1'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 18,
+    "fields": {
+      "user": 22,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "vydra.tasks.ingest_adi_playboy",
+      "queue": "playboy",
+      "provider_fs": "{'username': 'playboy-int', 'password': 'playboy321'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 19,
+    "fields": {
+      "user": 23,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "vydra.tasks.ingest_package_sandbox",
+      "queue": "sandbox",
+      "provider_fs": "{'username': 'playkids-int', 'password': 'fBE3sdUmT*^20XbV'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 20,
+    "fields": {
+      "user": 24,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "vydra.tasks.ingest_package_viasat",
+      "queue": "vydra.tasks.ingest_package_viasat",
+      "provider_fs": "{'username': 'viasat-int', 'password': 'd.3YTNF8y7'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 21,
+    "fields": {
+      "user": 25,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "vydra.tasks.ingest_adi_vivid",
+      "queue": "vivid",
+      "provider_fs": "{'username': 'vivid-int', 'password': 'vividly591'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 22,
+    "fields": {
+      "user": 19,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "vydra.tasks.ingest_adi_vubiquity",
+      "queue": "vubiquity",
+      "provider_fs": "{'username': 'vubiquity-int', 'password': 'vubiquity321'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 23,
+    "fields": {
+      "user": 26,
+      "active": true,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "vydra.tasks.ingest_adi_hbo_master",
+      "queue": "hbo_master",
+      "provider_fs": "{'username': 'wbd-int', 'password': 'wbd_vydra'}"
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 24,
+    "fields": {
+      "user": 6,
+      "active": false,
+      "use_staging_db": false,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": "true",
+      "vidra_task": "true",
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 25,
+    "fields": {
+      "user": 29,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 26,
+    "fields": {
+      "user": 30,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 27,
+    "fields": {
+      "user": 31,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 28,
+    "fields": {
+      "user": 32,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 29,
+    "fields": {
+      "user": 33,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 30,
+    "fields": {
+      "user": 34,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 31,
+    "fields": {
+      "user": 35,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 32,
+    "fields": {
+      "user": 36,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 33,
+    "fields": {
+      "user": 37,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 34,
+    "fields": {
+      "user": 38,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 35,
+    "fields": {
+      "user": 39,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 36,
+    "fields": {
+      "user": 40,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 37,
+    "fields": {
+      "user": 41,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 38,
+    "fields": {
+      "user": 42,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 39,
+    "fields": {
+      "user": 43,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 40,
+    "fields": {
+      "user": 44,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 41,
+    "fields": {
+      "user": 45,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 42,
+    "fields": {
+      "user": 46,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 43,
+    "fields": {
+      "user": 47,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  },
+  {
+    "model": "vod.provider",
+    "pk": 44,
+    "fields": {
+      "user": 48,
+      "active": false,
+      "use_staging_db": true,
+      "enable_drm": true,
+      "default_active_tv": true,
+      "default_active_web": true,
+      "default_active_mobile": true,
+      "default_active_lte": true,
+      "catalog_name": null,
+      "vidra_task": null,
+      "queue": null,
+      "provider_fs": null
+    }
+  }
+]

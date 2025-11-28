@@ -1,0 +1,9 @@
+{# This replaces the <ul> when folder is clicked #}
+<ul class="transition-all">
+  {% for child in node.children.all %}
+    {% include "core/partials/_node.html" with node=child %}
+  {% endfor %}
+  {% if not node.children.exists %}
+    <li class="text-xs text-gray-500 pl-8 py-1">Empty folder</li>
+  {% endif %}
+</ul>

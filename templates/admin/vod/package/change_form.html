@@ -1,0 +1,10 @@
+<!-- templates/admin/myapp/product/change_form.html -->
+{% extends "admin/change_form.html" %}
+{% block object-tools-items %}
+    {{ block.super }}
+    <li>
+            <a href="{% url 'admin:validate_adi' original.pk %}">Validate Adi</a>
+
+
+    </li>
+{% endblock %}

@@ -1,0 +1,15 @@
+{# templates/admin/xml_highlight_widget.html #}
+{% load static %}
+<pre style="margin:0; border:none; background:none;"><code class="language-xml" id="xml-{{ name }}">{{ value|linebreaksbr }}</code></pre>
+
+<link rel="stylesheet" href="{% static 'admin/css/highlight/vs2015.min.css' %}">
+<script src="{% static 'admin/js/highlight.min.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const code = document.getElementById('xml-{{ name }}');
+    if (code) {
+        hljs.highlightElement(code);
+        code.style.background = 'transparent';
+    }
+});
+</script>
