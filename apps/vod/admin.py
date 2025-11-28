@@ -1,12 +1,16 @@
-from xml.dom import minidom
-
 from django.contrib import admin
-from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.urls import path
 from django.utils.html import format_html
 
-from .models import Video, Package
+from .models import Video, Package, Provider, Edge, Stream
 from .tasks import validate_adi
+
+
+@admin.register(Provider)
+class ProviderAdmin(admin.ModelAdmin):
+    list_display = ('name', 'vidra_task', 'queue', 'active')
+    list_filter = ('active',)
 
 
 @admin.register(Video)
@@ -28,7 +32,7 @@ class PackageAdmin(admin.ModelAdmin):
     list_display = ('id', 'created_at', 'created_at', 'name', 'original')
     list_filter = ('created_at', 'created_at', 'original')
     search_fields = ('name',)
-    fields = 'name', 'original', 'manifest', 'adi_xml', 'xml_preview'
+    fields = 'name', 'original', 'manifest', 'xml_preview'
     readonly_fields = ('xml_preview',)
 
     def get_urls(self):
@@ -52,10 +56,11 @@ class PackageAdmin(admin.ModelAdmin):
                 current_object=obj,
             )
 
-            validate_adi(obj.manifest.file)
+            obj.validate_manifest()
+            obj.extract_metadata()
 
             # return self.render_to_response(context)
-            return HttpResponse(f"Admin object name: {obj.name} with ID: {obj.pk}")
+            return redirect('admin:vod_package_change', object_id)
 
         else:
             # Handle POST requests, e.g., processing a form related to 'obj'
@@ -87,3 +92,36 @@ class PackageAdmin(admin.ModelAdmin):
             """,
             obj.adi_xml,
         )
+
+
+class StreamAdminInline(admin.TabularInline):
+    model = Stream
+
+
+@admin.register(Edge)
+class EdgeAdmin(admin.ModelAdmin):
+    inlines = [StreamAdminInline]
+    list_display = (
+        'id',
+        'content_id',
+        'title',
+        'creation_time',
+        'modification_time',
+        'status',
+        'playable',
+        'content_duration_ms',
+        'provider',
+    )
+    list_filter = (
+        'creation_time',
+        'modification_time',
+        'playable',
+        'provider',
+    )
+    search_fields = ('content_id', 'title')
+
+
+@admin.register(Stream)
+class StreamAdmin(admin.ModelAdmin):
+    list_display = ('id', 'edge', 'stream_protocol', 'uri')
+    list_filter = ('edge',)

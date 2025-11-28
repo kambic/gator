@@ -9,15 +9,21 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .api.serializers import FileItemSerializer
+from .models import FileNode
 from ..dashboard.models import Provider, Edgeware
 
 
 # Create your views here.
 
+import os
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 
-class Components(TemplateView):
-    template_name = 'core/components.html'
+from ..vod.api.v1.serializers import FileItemSerializer
+
+BASE_DIR = "/export"
 
 
 class ShakaPlayer(TemplateView):
@@ -28,17 +34,15 @@ def index(request):
     return render(request, "core/index.html")
 
 
-import os
-from django.http import JsonResponse
-from django.shortcuts import render
-from django.conf import settings
-from django.views.decorators.csrf import csrf_exempt
-
-BASE_DIR = "/export"
-
-
 def file_explorer(request):
-    return render(request, "core/file_manager.html")
+    # Root nodes (parent is null)
+    roots = FileNode.objects.filter(parent=None)
+    return render(request, "core/file_manager.html", {"roots": roots})
+
+
+def htmx_load_children(request, node_id):
+    node = get_object_or_404(FileNode, id=node_id)
+    return render(request, "core/partials/_children.html", {"node": node})
 
 
 @csrf_exempt
@@ -83,7 +87,6 @@ class ProviderUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     success_url = reverse_lazy('core:providers-list')
 
 
-
 class EdgewareListView(LoginRequiredMixin, ListView):
     model = Edgeware
     template_name = 'core/edgeware_list.html'
@@ -108,6 +111,15 @@ class EdgewareListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['providers'] = Provider.objects.all()
+        from django.db.models import Count, Case, When, IntegerField, Q
+
+        context['aggregate'] = Edgeware.objects.aggregate(
+            success=Count(Case(When(status='done', then=1), output_field=IntegerField())),
+            pending=Count(Case(When(status='ew_pending', then=1), output_field=IntegerField())),
+            errors=Count(Case(When(status__contains='error', then=1), output_field=IntegerField())),
+            playable=Count(Case(When(playable=True, then=1), output_field=IntegerField())),
+            expired=Count(Case(When(expired__isnull=False, then=1), output_field=IntegerField())),
+        )
 
         # Stats
         all = Edgeware.objects.all()
@@ -118,6 +130,9 @@ class EdgewareListView(LoginRequiredMixin, ListView):
             'playable': all.filter(playable=True).count(),
             'expired': all.filter(expired__isnull=False).count(),
         }
+
+        # Default to 0 if no rows match
+
         return context
 
 

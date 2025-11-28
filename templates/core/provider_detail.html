@@ -1,198 +1,198 @@
 {% extends 'core/base.html' %} {% block title %}Provider • {{ provider.user.username }}{% endblock
-%} {% block content %}
-<div class="bg-base-200 min-h-screen px-4 py-8">
-  <div class="mx-auto max-w-7xl">
+  %} {% block content %}
+    <div class="bg-base-200 min-h-screen px-4 py-8">
+      <div class="mx-auto max-w-7xl">
     <!-- Header -->
-    <div class="bg-base-100 mb-8 rounded-xl p-8 shadow-lg">
-      <div class="flex flex-col items-start justify-between gap-6 sm:flex-row">
-        <div>
-          <h1 class="text-primary text-4xl font-bold">{{ provider.user.username }}</h1>
-          <p class="mt-2 text-xl opacity-80">{{ provider.user.email }}</p>
-          <div class="mt-4 flex flex-wrap items-center gap-3">
-            <span class="badge badge-lg badge-ghost">ID: {{ provider.id }}</span>
-            <span class="badge badge-lg badge-warning">
-              {{ provider.num_expired }} Expired Edgeware{{ provider.num_expired|pluralize }}
-            </span>
+        <div class="bg-base-100 mb-8 rounded-xl p-8 shadow-lg">
+          <div class="flex flex-col items-start justify-between gap-6 sm:flex-row">
+            <div>
+              <h1 class="text-primary text-4xl font-bold">{{ provider.user.username }}</h1>
+              <p class="mt-2 text-xl opacity-80">{{ provider.user.email }}</p>
+              <div class="mt-4 flex flex-wrap items-center gap-3">
+                <span class="badge badge-lg badge-ghost">ID: {{ provider.id }}</span>
+                <span class="badge badge-lg badge-warning">
+                  {{ provider.num_expired }} Expired Edgeware{{ provider.num_expired|pluralize }}
+                </span>
+              </div>
+            </div>
+            <a href="{% url 'core:providers-list' %}" class="btn btn-ghost btn-lg">
+              ← Back to Providers
+            </a>
           </div>
         </div>
-        <a href="{% url 'core:providers-list' %}" class="btn btn-ghost btn-lg">
-          ← Back to Providers
-        </a>
-      </div>
-    </div>
 
     <!-- Tabs -->
-    <div class="tabs tabs-bordered mb-8">
-      <a class="tab tab-lg tab-active">Overview</a>
-      <a
-        class="tab tab-lg"
-        hx-get="{% url 'core:provider-edgewares' provider.pk %}"
-        hx-target="#edgewares-tab"
-        >Edgewares ({{ provider.edgeware_set.count }})</a
-      >
-    </div>
+        <div class="tabs tabs-bordered mb-8">
+          <a class="tab tab-lg tab-active">Overview</a>
+          <a
+            class="tab tab-lg"
+            hx-get="{% url 'core:provider-edgewares' provider.pk %}"
+            hx-target="#edgewares-tab"
+          >Edgewares ({{ provider.edgeware_set.count }})</a
+            >
+          </div>
 
     <!-- Overview Tab -->
-    <div id="overview-tab">
-      <div class="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div class="bg-base-100 rounded-xl p-8 shadow lg:col-span-2">
-          <h2 class="mb-6 text-2xl font-bold">Provider Configuration</h2>
-          <div class="space-y-4 text-lg">
-            <div class="flex justify-between border-b py-3">
-              <span class="font-medium">Vidra Task</span>
-              <span>{{ provider.vidra_task|default:"—" }}</span>
-            </div>
-            <div class="flex justify-between border-b py-3">
-              <span class="font-medium">Queue</span>
-              <span>{{ provider.queue|default:"—" }}</span>
-            </div>
-          </div>
-        </div>
+          <div id="overview-tab">
+            <div class="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+              <div class="bg-base-100 rounded-xl p-8 shadow lg:col-span-2">
+                <h2 class="mb-6 text-2xl font-bold">Provider Configuration</h2>
+                <div class="space-y-4 text-lg">
+                  <div class="flex justify-between border-b py-3">
+                    <span class="font-medium">Vidra Task</span>
+                    <span>{{ provider.vidra_task|default:"—" }}</span>
+                  </div>
+                  <div class="flex justify-between border-b py-3">
+                    <span class="font-medium">Queue</span>
+                    <span>{{ provider.queue|default:"—" }}</span>
+                  </div>
+                </div>
+              </div>
 
-        <div class="space-y-6">
-          <div class="bg-base-100 rounded-xl p-6 shadow">
-            <h3 class="mb-4 text-xl font-bold">Quick Actions</h3>
-            <div class="flex flex-col gap-3">
-              <a href="{% url 'core:providers-edit' provider.pk %}" class="btn btn-primary"
-                >Edit Provider</a
-              >
-              <a href="{% url 'core:providers-delete' provider.pk %}" class="btn btn-error"
-                >Delete Provider</a
-              >
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+              <div class="space-y-6">
+                <div class="bg-base-100 rounded-xl p-6 shadow">
+                  <h3 class="mb-4 text-xl font-bold">Quick Actions</h3>
+                  <div class="flex flex-col gap-3">
+                    <a href="{% url 'core:providers-edit' provider.pk %}" class="btn btn-primary"
+                    >Edit Provider</a
+                      >
+                      <a href="{% url 'core:providers-delete' provider.pk %}" class="btn btn-error"
+                      >Delete Provider</a
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
     <!-- Edgewares Tab (loaded via HTMX or inline) -->
-    <div id="edgewares-tab">
-      {% if provider.edgeware_set.exists %}
-      <div class="space-y-6">
-        {% for edge in provider.edgeware_set.all %}
-        <div class="bg-base-100 overflow-hidden rounded-xl shadow-lg">
-          <div class="collapse-arrow border-base-300 collapse border">
-            <input type="checkbox" />
-            <div class="collapse-title flex items-center justify-between pr-8 text-xl font-bold">
-              <div class="flex items-center gap-4">
-                <span class="max-w-md truncate">{{ edge.title|default:"Untitled" }}</span>
-                {% if edge.expired %}
-                <span class="badge badge-error badge-sm">EXPIRED</span>
-                {% endif %}
-              </div>
-              <div class="flex items-center gap-3 text-sm">
-                <span
-                  class="badge {% if edge.status == 'done' %}badge-success {% elif edge.status == 'ew_error' or edge.status == 'ftp_error' %}badge-error {% elif edge.status == 'ew_pending' %}badge-warning {% else %}badge-ghost{% endif %}"
-                >
-                  {{ edge.get_status_display }}
-                </span>
-                <span class="text-base-content/70">
-                  {% if edge.content_duration_ms %} ⏱ {{ edge.content_duration }} {% endif %}
-                </span>
-              </div>
-            </div>
+              <div id="edgewares-tab">
+                {% if provider.edgeware_set.exists %}
+                  <div class="space-y-6">
+                    {% for edge in provider.edgeware_set.all %}
+                      <div class="bg-base-100 overflow-hidden rounded-xl shadow-lg">
+                        <div class="collapse-arrow border-base-300 collapse border">
+                          <input type="checkbox" />
+                          <div class="collapse-title flex items-center justify-between pr-8 text-xl font-bold">
+                            <div class="flex items-center gap-4">
+                              <span class="max-w-md truncate">{{ edge.title|default:"Untitled" }}</span>
+                              {% if edge.expired %}
+                                <span class="badge badge-error badge-sm">EXPIRED</span>
+                              {% endif %}
+                            </div>
+                            <div class="flex items-center gap-3 text-sm">
+                              <span
+                                class="badge {% if edge.status == 'done' %}badge-success {% elif edge.status == 'ew_error' or edge.status == 'ftp_error' %}badge-error {% elif edge.status == 'ew_pending' %}badge-warning {% else %}badge-ghost{% endif %}"
+                              >
+                                {{ edge.get_status_display }}
+                              </span>
+                              <span class="text-base-content/70">
+                                {% if edge.content_duration_ms %} ⏱ {{ edge.content_duration }} {% endif %}
+                              </span>
+                            </div>
+                          </div>
 
-            <div class="collapse-content">
-              <div class="bg-base-200 grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
-                <div class="space-y-3">
-                  <div>
-                    <strong>EW ID:</strong>
-                    <code class="text-xs">{{ edge.ew_id|default:"—" }}</code>
-                  </div>
-                  <div><strong>Offer ID:</strong> {{ edge.offer_id|default:"—" }}</div>
-                  <div>
-                    <strong>Encoder:</strong>
-                    <span class="badge badge-outline">{{ edge.get_encoder_display }}</span>
-                  </div>
-                  <div>
-                    <strong>Ingested:</strong> {{ edge.ingested|date:"d M Y H:i"|default:"—" }}
-                  </div>
-                  <div>
-                    <strong>Expired:</strong> {{ edge.expired|date:"d M Y H:i"|default:"—" }}
-                  </div>
-                </div>
-                <div class="space-y-3">
-                  <div><strong>Host:</strong> {{ edge.host|default:"—" }}</div>
-                  <div>
-                    <strong>FTP Dir:</strong>
-                    <code class="text-xs break-all">{{ edge.ftp_dir|default:"—" }}</code>
-                  </div>
-                  <div>
-                    <strong>Playable:</strong> {% if edge.playable %}Yes{% else %}No{% endif %}
-                  </div>
-                </div>
-              </div>
+                          <div class="collapse-content">
+                            <div class="bg-base-200 grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
+                              <div class="space-y-3">
+                                <div>
+                                  <strong>EW ID:</strong>
+                                  <code class="text-xs">{{ edge.ew_id|default:"—" }}</code>
+                                </div>
+                                <div><strong>Offer ID:</strong> {{ edge.offer_id|default:"—" }}</div>
+                                <div>
+                                  <strong>Encoder:</strong>
+                                  <span class="badge badge-outline">{{ edge.get_encoder_display }}</span>
+                                </div>
+                                <div>
+                                  <strong>Ingested:</strong> {{ edge.ingested|date:"d M Y H:i"|default:"—" }}
+                                </div>
+                                <div>
+                                  <strong>Expired:</strong> {{ edge.expired|date:"d M Y H:i"|default:"—" }}
+                                </div>
+                              </div>
+                              <div class="space-y-3">
+                                <div><strong>Host:</strong> {{ edge.host|default:"—" }}</div>
+                                <div>
+                                  <strong>FTP Dir:</strong>
+                                  <code class="text-xs break-all">{{ edge.ftp_dir|default:"—" }}</code>
+                                </div>
+                                <div>
+                                  <strong>Playable:</strong> {% if edge.playable %}Yes{% else %}No{% endif %}
+                                </div>
+                              </div>
+                            </div>
 
               <!-- Streams Table -->
-              {% if edge.stream_set.exists %}
-              <div class="border-base-300 border-t p-6">
-                <h4 class="mb-4 text-lg font-bold">Streams</h4>
-                <div class="overflow-x-auto">
-                  <table class="table-sm table-zebra table">
-                    <thead>
-                      <tr>
-                        <th>Type</th>
-                        <th>URI</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for stream in edge.stream_set.all %}
-                      <tr>
-                        <td>
-                          <span class="badge badge-primary badge-sm">{{ stream.type|upper }}</span>
-                        </td>
-                        <td class="max-w-xs font-mono text-xs break-all">{{ stream.uri }}</td>
-                        <td>
-                          <button
-                            onclick="navigator.clipboard.writeText('{{ stream.uri }}')"
-                            class="btn btn-xs btn-ghost"
-                            title="Copy"
-                          >
-                            Copy
-                          </button>
-                          <a
-                            href="{{ stream.uri }}"
-                            target="_blank"
-                            class="btn btn-xs btn-ghost"
-                            title="Open"
-                          >
-                            Open
-                          </a>
-                        </td>
-                      </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
-                </div>
+                            {% if edge.stream_set.exists %}
+                              <div class="border-base-300 border-t p-6">
+                                <h4 class="mb-4 text-lg font-bold">Streams</h4>
+                                <div class="overflow-x-auto">
+                                  <table class="table-sm table-zebra table">
+                                    <thead>
+                                      <tr>
+                                        <th>Type</th>
+                                        <th>URI</th>
+                                        <th>Actions</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {% for stream in edge.stream_set.all %}
+                                        <tr>
+                                          <td>
+                                            <span class="badge badge-primary badge-sm">{{ stream.type|upper }}</span>
+                                          </td>
+                                          <td class="max-w-xs font-mono text-xs break-all">{{ stream.uri }}</td>
+                                          <td>
+                                            <button
+                                              onclick="navigator.clipboard.writeText('{{ stream.uri }}')"
+                                              class="btn btn-xs btn-ghost"
+                                              title="Copy"
+                                            >
+                                              Copy
+                                            </button>
+                                            <a
+                                              href="{{ stream.uri }}"
+                                              target="_blank"
+                                              class="btn btn-xs btn-ghost"
+                                              title="Open"
+                                            >
+                                              Open
+                                            </a>
+                                          </td>
+                                        </tr>
+                                      {% endfor %}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            {% else %}
+                              <div class="border-base-300 text-base-content/60 border-t p-6 text-center">
+                                No streams available
+                              </div>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <div class="bg-base-100 rounded-xl py-16 text-center">
+                    <p class="text-base-content/60 text-xl">No edgewares found for this provider.</p>
+                  </div>
+                {% endif %}
               </div>
-              {% else %}
-              <div class="border-base-300 text-base-content/60 border-t p-6 text-center">
-                No streams available
-              </div>
-              {% endif %}
             </div>
           </div>
-        </div>
-        {% endfor %}
-      </div>
-      {% else %}
-      <div class="bg-base-100 rounded-xl py-16 text-center">
-        <p class="text-base-content/60 text-xl">No edgewares found for this provider.</p>
-      </div>
-      {% endif %}
-    </div>
-  </div>
-</div>
 
 <!-- Optional: Load Edgewares via HTMX (uncomment if you prefer lazy loading) -->
-<script>
-  document.body.addEventListener('htmx:afterSwap', (e) => {
-    if (e.detail.target.id === 'edgewares-tab') {
-      document
-        .querySelectorAll('.collapse input[type="checkbox"]')
-        .forEach((cb) => (cb.checked = false));
-    }
-  });
-</script>
-{% endblock %}
+          <script>
+            document.body.addEventListener('htmx:afterSwap', (e) => {
+              if (e.detail.target.id === 'edgewares-tab') {
+                document
+                  .querySelectorAll('.collapse input[type="checkbox"]')
+                  .forEach((cb) => (cb.checked = false));
+              }
+            });
+          </script>
+  {% endblock %}

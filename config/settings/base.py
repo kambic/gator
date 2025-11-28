@@ -69,7 +69,7 @@ INSTALLED_APPS = [
     'filer',
 ]
 
-
+VUEFINDER_ROOT = '/srv'
 # =============================================================================
 # MIDDLEWARE
 # =============================================================================
@@ -97,8 +97,6 @@ STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
     BASE_DIR / "static",
-    BASE_DIR / "assets",
-    "apps/dashboard/static/assets",
 ]
 
 MEDIA_URL = "/media/"

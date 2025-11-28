@@ -8,6 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email']  # whatever fields you want
 
+
 class ProviderSerializer(serializers.ModelSerializer):
     # username = serializers.CharField(source='user.username', read_only=True)
     user = UserSerializer(read_only=True)
@@ -18,11 +19,11 @@ class ProviderSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'vidra_task', 'queue', 'num_expired']
 
 
-
 class StreamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stream
         fields = ['type', 'uri']
+
 
 class EdgewareSerializer(serializers.ModelSerializer):
     provider_name = serializers.CharField(source='provider.user.username', read_only=True)
@@ -33,18 +34,7 @@ class EdgewareSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Edgeware
-        fields = [
-            'id', 'title', 'ew_id', 'offer_id', 'status', 'status_display',
-            'encoder_display', 'ingested', 'expired', 'playable',
-            'provider', 'provider_name', 'duration', 'streams'
-        ]
+        fields = ['id', 'title', 'ew_id', 'offer_id', 'status', 'status_display', 'encoder_display', 'ingested', 'expired', 'playable', 'provider', 'provider_name', 'duration', 'streams']
 
     def get_duration(self, obj):
         return obj.content_duration if hasattr(obj, 'content_duration') else None
-
-class FileItemSerializer(serializers.Serializer):
-    name = serializers.CharField()
-    path = serializers.CharField()
-    is_dir = serializers.BooleanField()
-    size = serializers.IntegerField(required=False)
-    modified = serializers.DateTimeField(required=False)

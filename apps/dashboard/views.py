@@ -1,6 +1,6 @@
 import datetime
 import glob
-import logging
+import structlog as logging
 import os
 import shutil
 from pathlib import Path
@@ -18,7 +18,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .backends.api import fetch_rabbitmq_queues
+from vidra_kit.backends.api import fetch_rabbitmq_queues, RabbitMQMonitor
 from ..dashboard.models import FileEntry
 from ..dashboard.serializers import JobSerializer
 from ..files.helpers import rm_file
@@ -45,10 +45,29 @@ templates/
 DOCS_DIR = Path(settings.BASE_DIR) / "docs"
 
 # Path to the directory where ZIP files are located
-VOD_INGEST_PATH = '/export/isilj/vod'
+VOD_INGEST_PATH = '/export/isilj/fenix2'
 
 
 # --- View to Display Files ---
+# Full page view (loads Alpine & HTMX)
+def celery_queue_dashboard(request):
+    return render(request, 'celery_dashboard.html')
+
+
+# Partial view (for HTMX refresh)
+def celery_queue_table(request):
+
+    monitor = RabbitMQMonitor(
+        host="bpl-vidra-03.ts.telekom.si",
+        port=15672,
+        username="guest",
+        password="guest",
+        vhost="/",  # or your custom vhost
+    )
+
+    celery_queue = monitor.get_all_queues()
+
+    return render(request, 'partials/_queue_table.html', {'queues': celery_queue})
 
 
 def vod_ingest_list(request):
@@ -56,7 +75,7 @@ def vod_ingest_list(request):
     Displays a list of all ZIP files found in the VOD_INGEST_PATH.
     """
     # Use glob to find all zip files (recursive=True is optional)
-    zip_files = glob.glob(os.path.join(VOD_INGEST_PATH, '**', '*.zip'), recursive=True)
+    zip_files = glob.glob(os.path.join(VOD_INGEST_PATH, '**', '*.tar'), recursive=True)
 
     file_list = []
     for full_path in zip_files:
@@ -82,10 +101,6 @@ def vod_ingest_list(request):
 
     # Use a custom template path, e.g., 'your_app/vod_ingest_list.html'
     return render(request, 'vod_ingest_list.html', context)
-
-
-def reencode_video(request, object_id):
-    return
 
 
 def doc_view(request, slug="index"):
@@ -129,17 +144,6 @@ def doc_view(request, slug="index"):
             "docs_list": docs_list,
         },
     )
-
-
-# Full page view (loads Alpine & HTMX)
-def celery_queue_dashboard(request):
-    return render(request, 'celery_dashboard.html')
-
-
-# Partial view (for HTMX refresh)
-def celery_queue_table(request):
-    queues = fetch_rabbitmq_queues()
-    return render(request, 'partials/_queue_table.html', {'queues': queues})
 
 
 # Named tuple for directory entries

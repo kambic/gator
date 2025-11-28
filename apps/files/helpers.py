@@ -3,7 +3,7 @@
 
 import hashlib
 import json
-import logging
+import structlog as logging
 import os
 import random
 import shutil
@@ -99,7 +99,7 @@ VIDEO_PROFILES = {"h264": "main", "h265": "main"}
 
 
 def get_portal_workflow():
-    return settings.PORTAL_WORKFLOW
+    return 'public'
 
 
 def get_default_state(user=None):
@@ -171,7 +171,7 @@ def rm_dir(directory):
 def url_from_path(filename):
     # TODO: find a way to preserver http - https ...
     url = f"{settings.MEDIA_URL}{filename.replace(str(settings.MEDIA_ROOT), '')}"
-    url = url.replace('//','/')
+    url = url.replace('//', '/')
     logger.info(f'FIXME {filename}')
     logger.info(f'replaced with {url}')
     return url

@@ -65,7 +65,9 @@ class ADIParser:
 
         # Check the root tag, ignoring potential namespace prefix
         if etree.QName(root).localname != "ADI":
-            raise ADIParseError(f"Root tag is not 'ADI', found '{etree.QName(root).localname}'")
+            raise ADIParseError(
+                f"Root tag is not 'ADI', found '{etree.QName(root).localname}'"
+            )
 
         return root
 
@@ -112,7 +114,9 @@ class ADIParser:
                 # Convert the list to a dictionary for easy access
                 asset_metadata_dict = self._app_data_list_to_dict(asset_app_data)
 
-                assets.append(Asset(metadata=asset_metadata_dict, app_data=asset_app_data))
+                assets.append(
+                    Asset(metadata=asset_metadata_dict, app_data=asset_app_data)
+                )
             # An Asset block without a Metadata block is technically possible but often invalid
 
         return assets
@@ -136,24 +140,3 @@ class ADIParser:
 
 
 # --- Example Usage ---
-
-# 1. Initialize the parser
-try:
-    parser = ADIParser(xml_path='/home/e-kambicr/neo/alligator/media/manifests/adi.xml')
-
-    # 2. Execute the parse method
-    meta = parser.parse()
-
-    # 3. Use the structured data
-    print("## Global Metadata (Title, Provider ID, etc.)")
-    print(meta.metadata)
-    print("\n## Asset List")
-    print(meta.assets)
-
-    # Example: Accessing the first Asset's Title
-    if meta.assets:
-        first_asset_title = meta.assets[0].metadata.get('Title')
-        print(f"\nFirst Asset Title: {first_asset_title}")
-
-except ADIParseError as e:
-    print(f"Parsing failed: {e}")

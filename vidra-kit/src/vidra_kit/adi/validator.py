@@ -61,7 +61,6 @@ class ADIValidator:
 
     def __init__(self, config: Optional[ADIValidatorConfig] = None):
         self.config = config or ADIValidatorConfig()
-        # We only need one etree.XMLSchema object, lxml handles includes
         self.schema: Optional[etree.XMLSchema] = None
         self._load_schemas()
 
@@ -101,7 +100,9 @@ class ADIValidator:
     def validate(self, xml_path: str | Path) -> ValidationResult:
         """Run full validation on an ADI XML file."""
         # ... (Rest of the validate method remains the same) ...
+
         xml_path = Path(xml_path)
+
         result = ValidationResult(success=True)
 
         log.info(f"Starting validation of: {xml_path}")
@@ -121,8 +122,6 @@ class ADIValidator:
         result.log()
         return result
 
-    # --- Helper methods _parse_xml, _validate_root_tag, etc. remain unchanged ---
-    # (Copy the rest of the original methods here)
     def _parse_xml(
         self, xml_path: Path, result: ValidationResult
     ) -> etree._ElementTree | None:

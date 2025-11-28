@@ -6,23 +6,19 @@
     <th>Unacked</th>
     <th>Ready</th>
     <th>Consumers</th>
-    <th>Idle Since</th>
     <th>Status</th>
   </tr>
   </thead>
   <tbody>
   {% for queue in queues %}
     <tr>
-      <td>{{ queue.queue }}</td>
+      <td>{{ queue.name }}</td>
       <td>{{ queue.messages }}</td>
-      <td>{{ queue.unacked }}</td>
-      <td>{{ queue.ready }}</td>
+      <td>{{ queue.messages_unacknowledged }}</td>
+      <td>{{ queue.messages_ready }}</td>
       <td>{{ queue.consumers }}</td>
-      <td>{{ queue.idle_since }}</td>
-      <td>
-        <span class="badge rounded-pill bg-{{ queue.status }}">{{ queue.status }}</span>
+      <td>{{ queue.state }}</td>
 
-      </td>
     </tr>
     {% empty %}
     <tr>

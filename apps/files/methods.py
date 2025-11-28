@@ -2,7 +2,7 @@
 # related content
 
 import itertools
-import logging
+import structlog as logging
 import os
 import random
 import re

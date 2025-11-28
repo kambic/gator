@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from . import views
 from .api.views import ProviderViewSet, EdgewareViewSet
-from .views import FileAPIView, Components, ShakaPlayer
+from .views import FileAPIView, ShakaPlayer
 
 router = DefaultRouter()
 router.register(r'providers', ProviderViewSet, basename='providers')
@@ -17,6 +17,7 @@ urlpatterns = [
     path('providers/', views.ProviderListView.as_view(), name='vod-providers-list'),
     path('providers/<int:pk>/', views.ProviderDetailView.as_view(), name='providers-detail'),
     path('files/', views.file_explorer, name='file_explorer'),
+    path("children/<int:node_id>/", views.htmx_load_children, name="load_children"),
     # ✅ File API
     path('api/files/', FileAPIView.as_view(), name='file_api'),
     path('api/', include(router.urls)),

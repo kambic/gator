@@ -1,210 +1,210 @@
 {% extends 'core/base.html' %} {% block title %}Providers{% endblock %} {% block content %}
-<div x-data="providersCRUD()" x-init="loadData()" class="bg-base-100 rounded-lg p-6 shadow-lg">
-  <div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-    <h2 class="text-primary text-3xl font-bold">👥 Providers</h2>
-    <div class="flex flex-wrap gap-3">
-      <input
-        type="text"
-        x-model.debounce.500ms="search"
-        placeholder="Search by task, queue, username or email..."
-        class="input input-bordered input-sm w-full sm:w-72"
-      />
-      <a :href="createUrl" class="btn btn-primary btn-sm"> ➕ Add Provider </a>
+  <div x-data="providersCRUD()" x-init="loadData()" class="bg-base-100 rounded-lg p-6 shadow-lg">
+    <div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+      <h2 class="text-primary text-3xl font-bold">👥 Providers</h2>
+      <div class="flex flex-wrap gap-3">
+        <input
+          type="text"
+          x-model.debounce.500ms="search"
+          placeholder="Search by task, queue, username or email..."
+          class="input input-bordered input-sm w-full sm:w-72"
+        />
+        <a :href="createUrl" class="btn btn-primary btn-sm"> ➕ Add Provider </a>
+      </div>
     </div>
-  </div>
 
   <!-- Loading -->
-  <div x-show="loading" class="py-16 text-center">
-    <span class="loading loading-spinner loading-lg"></span>
-  </div>
+    <div x-show="loading" class="py-16 text-center">
+      <span class="loading loading-spinner loading-lg"></span>
+    </div>
 
   <!-- Table -->
-  <div class="overflow-x-auto" x-show="!loading">
-    <table class="table-zebra table w-full">
-      <thead>
-        <tr>
-          <th
-            @click="toggleSort('user__username')"
-            :class="{ 'bg-primary/10 font-bold text-primary': sort === 'user__username' }"
-            class="hover:bg-base-200 cursor-pointer transition"
-          >
-            Username
-            <span
-              x-show="sort === 'user__username'"
-              x-text="order === 'asc' ? '↑' : '↓'"
-              class="ml-1 font-bold"
-            ></span>
-          </th>
-          <th
-            @click="toggleSort('user__email')"
-            :class="{ 'bg-primary/10 font-bold text-primary': sort === 'user__email' }"
-            class="hover:bg-base-200 cursor-pointer transition"
-          >
-            Email
-            <span
-              x-show="sort === 'user__email'"
-              x-text="order === 'asc' ? '↑' : '↓'"
-              class="ml-1 font-bold"
-            ></span>
-          </th>
-          <th
-            @click="toggleSort('vidra_task')"
-            :class="{ 'bg-primary/10 font-bold text-primary': sort === 'vidra_task' }"
-            class="hover:bg-base-200 cursor-pointer transition"
-          >
-            Vidra Task
-            <span
-              x-show="sort === 'vidra_task'"
-              x-text="order === 'asc' ? '↑' : '↓'"
-              class="ml-1 font-bold"
-            ></span>
-          </th>
-          <th
-            @click="toggleSort('queue')"
-            :class="{ 'bg-primary/10 font-bold text-primary': sort === 'queue' }"
-            class="hover:bg-base-200 cursor-pointer transition"
-          >
-            Queue
-            <span
-              x-show="sort === 'queue'"
-              x-text="order === 'asc' ? '↑' : '↓'"
-              class="ml-1 font-bold"
-            ></span>
-          </th>
-          <th
-            @click="toggleSort('num_expired')"
-            :class="{ 'bg-primary/10 font-bold text-primary': sort === 'num_expired' }"
-            class="hover:bg-base-200 cursor-pointer text-center transition"
-          >
-            Expired
-            <span
-              x-show="sort === 'num_expired'"
-              x-text="order === 'asc' ? '↑' : '↓'"
-              class="ml-1 font-bold"
-            ></span>
-          </th>
-          <th class="text-center">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <template x-for="p in providers" :key="p.id">
-          <tr class="hover hover:bg-base-200 cursor-pointer transition" @click="goToDetail(p.id)">
-            <td><strong x-text="p.user.username"></strong></td>
-            <td x-text="p.user.email"></td>
-            <td x-text="p.vidra_task || '—'"></td>
-            <td x-text="p.queue || '—'"></td>
-            <td class="text-center">
+    <div class="overflow-x-auto" x-show="!loading">
+      <table class="table-zebra table w-full">
+        <thead>
+          <tr>
+            <th
+              @click="toggleSort('user__username')"
+              :class="{ 'bg-primary/10 font-bold text-primary': sort === 'user__username' }"
+              class="hover:bg-base-200 cursor-pointer transition"
+            >
+              Username
               <span
-                class="badge badge-sm"
-                :class="p.num_expired > 0 ? 'badge-error' : 'badge-success'"
-                x-text="p.num_expired"
+                x-show="sort === 'user__username'"
+                x-text="order === 'asc' ? '↑' : '↓'"
+                class="ml-1 font-bold"
               ></span>
-            </td>
-            <td class="text-center" @click.stop>
-              <a :href="`${detailUrl}${p.id}/`" class="btn btn-xs btn-ghost text-info">👁</a>
-              <button @click.stop="deleteProvider(p.id)" class="btn btn-xs btn-ghost text-error">
-                🗑
-              </button>
-            </td>
+            </th>
+            <th
+              @click="toggleSort('user__email')"
+              :class="{ 'bg-primary/10 font-bold text-primary': sort === 'user__email' }"
+              class="hover:bg-base-200 cursor-pointer transition"
+            >
+              Email
+              <span
+                x-show="sort === 'user__email'"
+                x-text="order === 'asc' ? '↑' : '↓'"
+                class="ml-1 font-bold"
+              ></span>
+            </th>
+            <th
+              @click="toggleSort('vidra_task')"
+              :class="{ 'bg-primary/10 font-bold text-primary': sort === 'vidra_task' }"
+              class="hover:bg-base-200 cursor-pointer transition"
+            >
+              Vidra Task
+              <span
+                x-show="sort === 'vidra_task'"
+                x-text="order === 'asc' ? '↑' : '↓'"
+                class="ml-1 font-bold"
+              ></span>
+            </th>
+            <th
+              @click="toggleSort('queue')"
+              :class="{ 'bg-primary/10 font-bold text-primary': sort === 'queue' }"
+              class="hover:bg-base-200 cursor-pointer transition"
+            >
+              Queue
+              <span
+                x-show="sort === 'queue'"
+                x-text="order === 'asc' ? '↑' : '↓'"
+                class="ml-1 font-bold"
+              ></span>
+            </th>
+            <th
+              @click="toggleSort('num_expired')"
+              :class="{ 'bg-primary/10 font-bold text-primary': sort === 'num_expired' }"
+              class="hover:bg-base-200 cursor-pointer text-center transition"
+            >
+              Expired
+              <span
+                x-show="sort === 'num_expired'"
+                x-text="order === 'asc' ? '↑' : '↓'"
+                class="ml-1 font-bold"
+              ></span>
+            </th>
+            <th class="text-center">Actions</th>
           </tr>
-        </template>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <template x-for="p in providers" :key="p.id">
+            <tr class="hover hover:bg-base-200 cursor-pointer transition" @click="goToDetail(p.id)">
+              <td><strong x-text="p.user.username"></strong></td>
+              <td x-text="p.user.email"></td>
+              <td x-text="p.vidra_task || '—'"></td>
+              <td x-text="p.queue || '—'"></td>
+              <td class="text-center">
+                <span
+                  class="badge badge-sm"
+                  :class="p.num_expired > 0 ? 'badge-error' : 'badge-success'"
+                  x-text="p.num_expired"
+                ></span>
+              </td>
+              <td class="text-center" @click.stop>
+                <a :href="`${detailUrl}${p.id}/`" class="btn btn-xs btn-ghost text-info">👁</a>
+                <button @click.stop="deleteProvider(p.id)" class="btn btn-xs btn-ghost text-error">
+                  🗑
+                </button>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
 
     <!-- Empty State -->
-    <div x-show="providers.length === 0 && !loading" class="py-12 text-center text-gray-500">
-      <p class="text-lg">No providers found.</p>
+      <div x-show="providers.length === 0 && !loading" class="py-12 text-center text-gray-500">
+        <p class="text-lg">No providers found.</p>
+      </div>
     </div>
-  </div>
 
   <!-- Pagination -->
-  <div class="mt-6 flex items-center justify-between">
-    <div class="text-sm opacity-70">
-      Page <span x-text="page"></span>
-      <span x-show="count"> of <strong x-text="Math.ceil(count / 10)"></strong></span>
-    </div>
-    <div class="join">
-      <button class="join-item btn btn-sm" @click="prevPage()" :disabled="!prev">« Prev</button>
-      <button class="join-item btn btn-sm">Page <span x-text="page"></span></button>
-      <button class="join-item btn btn-sm" @click="nextPage()" :disabled="!next">Next »</button>
+    <div class="mt-6 flex items-center justify-between">
+      <div class="text-sm opacity-70">
+        Page <span x-text="page"></span>
+        <span x-show="count"> of <strong x-text="Math.ceil(count / 10)"></strong></span>
+      </div>
+      <div class="join">
+        <button class="join-item btn btn-sm" @click="prevPage()" :disabled="!prev">« Prev</button>
+        <button class="join-item btn btn-sm">Page <span x-text="page"></span></button>
+        <button class="join-item btn btn-sm" @click="nextPage()" :disabled="!next">Next »</button>
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-  function providersCRUD() {
-    return {
-      providers: [],
-      count: null,
-      search: '',
-      sort: 'user__username',
-      order: 'asc',
-      page: 1,
-      next: null,
-      prev: null,
-      loading: false,
+  <script>
+    function providersCRUD() {
+      return {
+        providers: [],
+        count: null,
+        search: '',
+        sort: 'user__username',
+        order: 'asc',
+        page: 1,
+        next: null,
+        prev: null,
+        loading: false,
 
-      apiBase: '{% url "core:providers-list" %}',
-      detailUrl: '{% url "core:providers-detail" 999 %}'.replace('999', ''), // trick to get base URL
-      createUrl: '#',
+        apiBase: '{% url "core:providers-list" %}',
+        detailUrl: '{% url "core:providers-detail" 999 %}'.replace('999', ''), // trick to get base URL
+        createUrl: '#',
 
-      loadData(url = null) {
-        this.loading = true;
-        const params = new URLSearchParams({
-          search: this.search,
-          ordering: (this.order === 'desc' ? '-' : '') + this.sort,
-          page: this.page,
-        });
-        const apiUrl = url || `${this.apiBase}?${params}`;
+        loadData(url = null) {
+          this.loading = true;
+          const params = new URLSearchParams({
+            search: this.search,
+            ordering: (this.order === 'desc' ? '-' : '') + this.sort,
+            page: this.page,
+          });
+          const apiUrl = url || `${this.apiBase}?${params}`;
 
-        fetch(apiUrl)
-          .then((r) => r.json())
-          .then((data) => {
-            this.providers = data.results;
-            this.count = data.count;
-            this.next = data.next;
-            this.prev = data.previous;
-            this.loading = false;
-          })
-          .catch(() => (this.loading = false));
-      },
+          fetch(apiUrl)
+            .then((r) => r.json())
+            .then((data) => {
+              this.providers = data.results;
+              this.count = data.count;
+              this.next = data.next;
+              this.prev = data.previous;
+              this.loading = false;
+            })
+            .catch(() => (this.loading = false));
+        },
 
-      toggleSort(col) {
-        if (this.sort === col) {
-          this.order = this.order === 'asc' ? 'desc' : 'asc';
-        } else {
-          this.sort = col;
-          this.order = 'asc';
-        }
-        this.page = 1;
-        this.loadData();
-      },
+        toggleSort(col) {
+          if (this.sort === col) {
+            this.order = this.order === 'asc' ? 'desc' : 'asc';
+          } else {
+            this.sort = col;
+            this.order = 'asc';
+          }
+          this.page = 1;
+          this.loadData();
+        },
 
-      nextPage() {
-        if (this.next) {
-          this.page++;
-          this.loadData(this.next);
-        }
-      },
-      prevPage() {
-        if (this.prev) {
-          this.page--;
-          this.loadData(this.prev);
-        }
-      },
+        nextPage() {
+          if (this.next) {
+            this.page++;
+            this.loadData(this.next);
+          }
+        },
+        prevPage() {
+          if (this.prev) {
+            this.page--;
+            this.loadData(this.prev);
+          }
+        },
 
-      goToDetail(id) {
-        window.location.href = this.detailUrl + id + '/';
-      },
+        goToDetail(id) {
+          window.location.href = this.detailUrl + id + '/';
+        },
 
-      deleteProvider(id) {
-        if (!confirm('Delete this provider permanently?')) return;
-        fetch(`${this.apiBase}${id}/`, {
-          method: 'DELETE',
-          headers: { 'X-CSRFToken': '{{ csrf_token }}' },
-        }).then(() => this.loadData());
-      },
-    };
-  }
-</script>
+        deleteProvider(id) {
+          if (!confirm('Delete this provider permanently?')) return;
+          fetch(`${this.apiBase}${id}/`, {
+            method: 'DELETE',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+          }).then(() => this.loadData());
+        },
+      };
+    }
+  </script>
 {% endblock %}

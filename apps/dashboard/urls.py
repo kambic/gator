@@ -5,7 +5,6 @@ from .views import (
     celery_queue_table,
     get_child_nodes,
     get_root_nodes,
-    reencode_video,
     vod_ingest_list,
     CreateVidraJob,
     CreateVidraJobApi,
@@ -18,10 +17,8 @@ from .views import (
 app_name = "dashboard"
 
 urlpatterns = [
-    path('', vod_ingest_list, name='list'),
+    path('', vod_ingest_list, name='mediahub_list'),
     path("upload/", FineUploaderView.as_view(), name="upload"),
-    path('admin/dashboard/vidrajob/<int:pk>/reencode/', reencode_video, name='dashboard_vidrajob_reencode'),
-    # urls.py
     path('api/files/root/', get_root_nodes, name='root_nodes'),
     path('api/files/children/<path:parent_path>/', get_child_nodes, name='child_nodes'),
     path("vidra/tasks/", ListVidraJobs.as_view(), name="tasks_list"),  # UI list

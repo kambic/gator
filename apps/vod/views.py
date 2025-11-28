@@ -5,32 +5,19 @@ from pathlib import Path
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseForbidden
-from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_GET
 
-from .forms import VideoUploadForm
 from .models import Video
-from .tasks import process_vod_package
 
 BASE_DIR = Path(settings.BASE_DIR)  # Your project root
 ALLOWED_ROOT = BASE_DIR  # Change this to restrict (e.g. BASE_DIR / "myapp")
 
 
 @login_required
-def upload_package(request):
-    if request.method == 'POST':
-        form = VideoUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            video = form.save(commit=False)
-            video.user = request.user
-            video.save()
+def home(request):
 
-            process_vod_package.delay(video.id)
-            return JsonResponse({"status": "success", "video_id": video.id})
-    else:
-        form = VideoUploadForm()
-    return render(request, 'vod/upload.html', {'form': form})
+    return render(request, 'vod/home.html', {'form': None})
 
 
 def video_list(request):

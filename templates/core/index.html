@@ -1,268 +1,415 @@
-{% extends 'core/base.html' %} {% block title %}Components Showcase{% endblock %}
+{% extends 'core/base.html' %}
+{% block title %}Components Showcase{% endblock %}
 {% block breadcrumbs %}
-<li>Components</li>
-{% endblock %} {% block content %}
-<div class="space-y-10">
-  <!-- STATS -->
-  <section>
-    <h2 class="mb-4 text-xl font-bold">Stats</h2>
-    <div class="stats w-full shadow">
-      <div class="stat">
-        <div class="stat-title">Users</div>
-        <div class="stat-value text-primary">1,234</div>
-      </div>
-      <div class="stat">
-        <div class="stat-title">Sales</div>
-        <div class="stat-value text-secondary">$12,345</div>
-      </div>
-      <div class="stat">
-        <div class="stat-title">Growth</div>
-        <div class="stat-value text-accent">+49%</div>
-      </div>
-    </div>
-  </section>
+  <li>Components</li>
+{% endblock %}
+{% block content %}
 
-  <!-- BUTTONS -->
-  <section>
-    <h2 class="mb-4 text-xl font-bold">Buttons</h2>
-    <div class="flex flex-wrap gap-2">
-      <button class="btn">Default</button>
-      <button class="btn btn-neutral">Neutral</button>
-      <button class="btn btn-primary">Primary</button>
-      <button class="btn btn-secondary">Secondary</button>
-      <button class="btn btn-accent">Accent</button>
-      <button class="btn btn-info">Info</button>
-      <button class="btn btn-success">Success</button>
-      <button class="btn btn-warning">Warning</button>
-      <button class="btn btn-error">Error</button>
-      <button class="btn btn-outline">Outline</button>
-    </div>
-  </section>
 
-  <!-- ALERTS -->
-  <section>
-    <h2 class="mb-4 text-xl font-bold">Alerts</h2>
-    <div class="space-y-3">
-      <div class="alert alert-info">Info alert</div>
-      <div class="alert alert-success">Success alert</div>
-      <div class="alert alert-warning">Warning alert</div>
-      <div class="alert alert-error">Error alert</div>
-    </div>
-  </section>
+    <!-- Header -->
+  <div class="flex justify-between items-center">
+    <h1 class="text-3xl font-bold">Dashboard Overview</h1>
+    <button class="btn btn-primary" @click="modal=true">Open Modal</button>
+  </div>
 
-  <!-- BADGES -->
-  <section>
-    <h2 class="mb-4 text-xl font-bold">Badges</h2>
-    <div class="flex items-center gap-2">
-      <span class="badge">Default</span>
-      <span class="badge badge-primary">Primary</span>
-      <span class="badge badge-secondary">Secondary</span>
-      <span class="badge badge-accent">Accent</span>
-      <span class="badge badge-success">Success</span>
-      <span class="badge badge-warning">Warning</span>
-      <span class="badge badge-error">Error</span>
+    <!-- Stats Row -->
+  <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="stat bg-base-100 shadow rounded-box">
+      <div class="stat-title">Users</div>
+      <div class="stat-value">1,206</div>
+      <div class="stat-desc">↗︎ 23% this month</div>
     </div>
-  </section>
 
-  <!-- CARDS -->
-  <section>
-    <h2 class="mb-4 text-xl font-bold">Card</h2>
-    <div class="card bg-base-100 w-96 shadow">
+    <div class="stat bg-base-100 shadow rounded-box">
+      <div class="stat-title">Revenue</div>
+      <div class="stat-value">$87k</div>
+      <div class="stat-desc">↗︎ 8% this month</div>
+    </div>
+
+    <div class="stat bg-base-100 shadow rounded-box">
+      <div class="stat-title">New Orders</div>
+      <div class="stat-value">312</div>
+      <div class="stat-desc">↘︎ 4% this week</div>
+    </div>
+
+    <div class="stat bg-base-100 shadow rounded-box">
+      <div class="stat-title">Tickets</div>
+      <div class="stat-value">72</div>
+      <div class="stat-desc">↗︎ 12% today</div>
+    </div>
+  </div>
+
+    <!-- Cards Row -->
+  <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+    <div class="card bg-base-100 shadow">
       <div class="card-body">
-        <h2 class="card-title">Example Card</h2>
-        <p>This is a simple card with actions.</p>
+        <h2 class="card-title">Quick Action</h2>
+        <p>Perform an immediate task.</p>
         <div class="card-actions justify-end">
-          <button class="btn btn-primary">Action</button>
+          <button class="btn btn-primary">Run</button>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- TABS -->
-  <section x-data="{ tab: 1 }">
-    <h2 class="mb-4 text-xl font-bold">Tabs</h2>
-
-    <div class="tabs tabs-boxed mb-4">
-      <a class="tab" :class="{ 'tab-active': tab===1 }" @click="tab=1">Tab 1</a>
-      <a class="tab" :class="{ 'tab-active': tab===2 }" @click="tab=2">Tab 2</a>
-      <a class="tab" :class="{ 'tab-active': tab===3 }" @click="tab=3">Tab 3</a>
+    <div class="card bg-base-100 shadow">
+      <figure><img src="https://picsum.photos/400/200" /></figure>
+      <div class="card-body">
+        <h2 class="card-title">Media Card</h2>
+        <p>This card has an image.</p>
+      </div>
     </div>
 
-    <div class="bg-base-100 rounded p-4 shadow">
-      <template x-if="tab===1">
-        <p>Content for Tab 1.</p>
-      </template>
-      <template x-if="tab===2">
-        <p>Content for Tab 2.</p>
-      </template>
-      <template x-if="tab===3">
-        <p>Content for Tab 3.</p>
-      </template>
+    <div class="card bg-base-100 shadow">
+      <div class="card-body">
+        <h2 class="card-title">Dropdown Example</h2>
+        <div class="dropdown" x-data="{open:false}">
+          <button class="btn" @click="open=!open">Options</button>
+          <ul x-show="open"
+              @click.outside="open=false"
+              x-transition
+              class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 mt-2">
+            <li><a>Profile</a></li>
+            <li><a>Settings</a></li>
+            <li><a>Logout</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
-  </section>
+  </div>
 
-  <!-- TABLE -->
-  <section>
-    <h2 class="mb-4 text-xl font-bold">Table</h2>
-    <div class="bg-base-100 overflow-x-auto rounded shadow">
-      <table class="table">
+    <!-- Tabs Section -->
+  <div x-data="{ tab:'a'}" class="bg-base-100 p-4 shadow rounded-box">
+    <div class="tabs tabs-bordered">
+      <a class="tab" :class="{'tab-active':tab==='a'}" @click="tab='a'">Tab A</a>
+      <a class="tab" :class="{'tab-active':tab==='b'}" @click="tab='b'">Tab B</a>
+      <a class="tab" :class="{'tab-active':tab==='c'}" @click="tab='c'">Tab C</a>
+    </div>
+
+    <div class="mt-4">
+      <p x-show="tab==='a'">This is content A.</p>
+      <p x-show="tab==='b'">This is content B.</p>
+      <p x-show="tab==='c'">This is content C.</p>
+    </div>
+  </div>
+
+    <!-- Table Section -->
+  <div class="bg-base-100 shadow rounded-box p-4">
+    <h2 class="text-xl font-bold mb-4">User Table</h2>
+    <div class="overflow-x-auto">
+      <table class="table table-zebra w-full">
         <thead>
           <tr>
-            <th>User</th>
-            <th>Status</th>
-            <th>Role</th>
+            <th>Name</th>
+            <th>Job</th>
+            <th>Favorite Color</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Alice</td>
-            <td><span class="badge badge-success">Active</span></td>
-            <td>Admin</td>
+            <td>John</td>
+            <td>Developer</td>
+            <td>Blue</td>
           </tr>
           <tr>
-            <td>Bob</td>
-            <td><span class="badge badge-warning">Pending</span></td>
-            <td>Editor</td>
+            <td>Maria</td>
+            <td>Designer</td>
+            <td>Pink</td>
           </tr>
           <tr>
-            <td>Charlie</td>
-            <td><span class="badge badge-error">Banned</span></td>
-            <td>Viewer</td>
+            <td>Nate</td>
+            <td>Manager</td>
+            <td>Green</td>
           </tr>
         </tbody>
       </table>
     </div>
-  </section>
+  </div>
 
-  <!-- FORM -->
-  <section>
-    <h2 class="mb-4 text-xl font-bold">Forms</h2>
-    <form class="bg-base-100 max-w-lg space-y-4 rounded p-6 shadow">
-      <input type="text" placeholder="Text input" class="input input-bordered w-full" />
-      <select class="select select-bordered w-full">
-        <option>Choose option</option>
-        <option>Alpha</option>
-        <option>Beta</option>
-      </select>
-      <textarea class="textarea textarea-bordered w-full" placeholder="Textarea"></textarea>
+    <!-- Form Section -->
+  <div class="bg-base-100 p-6 rounded-box shadow">
+    <h2 class="text-xl font-bold mb-4">Form Example</h2>
+
+    <form class="grid gap-4" x-data="{ email:'', error:'' }"
+          @submit.prevent="error = email.includes('@') ? '' : 'Invalid email format'">
+
+      <label class="form-control">
+        <span class="label-text">Email</span>
+        <input type="email" class="input input-bordered" x-model="email" />
+        <p class="text-error" x-show="error" x-text="error"></p>
+      </label>
+
+      <label class="form-control">
+        <span class="label-text">Password</span>
+        <input type="password" class="input input-bordered" />
+      </label>
+
       <button class="btn btn-primary">Submit</button>
     </form>
-  </section>
+  </div>
 
-  <!-- PAGINATION -->
-  <section>
-    <h2 class="mb-4 text-xl font-bold">Pagination</h2>
-    <div class="join">
-      <button class="join-item btn">«</button>
-      <button class="join-item btn btn-primary">1</button>
-      <button class="join-item btn">2</button>
-      <button class="join-item btn">3</button>
-      <button class="join-item btn">»</button>
-    </div>
-  </section>
 
-  <!-- MODAL -->
-  <section x-data="{ open:false }">
-    <h2 class="mb-4 text-xl font-bold">Modal</h2>
-    <button class="btn btn-primary" @click="open=true">Open Modal</button>
 
-    <div class="modal" :class="{ 'modal-open': open }">
-      <div class="modal-box">
-        <h3 class="text-lg font-bold">Modal Title</h3>
-        <p class="py-4">This is an Alpine-powered modal.</p>
-        <div class="modal-action">
-          <button class="btn" @click="open=false">Close</button>
+  <div class="space-y-10">
+  <!-- STATS -->
+    <section>
+      <h2 class="mb-4 text-xl font-bold">Stats</h2>
+      <div class="stats w-full shadow">
+        <div class="stat">
+          <div class="stat-title">Users</div>
+          <div class="stat-value text-primary">1,234</div>
+        </div>
+        <div class="stat">
+          <div class="stat-title">Sales</div>
+          <div class="stat-value text-secondary">$12,345</div>
+        </div>
+        <div class="stat">
+          <div class="stat-title">Growth</div>
+          <div class="stat-value text-accent">+49%</div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+  <!-- BUTTONS -->
+    <section>
+      <h2 class="mb-4 text-xl font-bold">Buttons</h2>
+      <div class="flex flex-wrap gap-2">
+        <button class="btn">Default</button>
+        <button class="btn btn-neutral">Neutral</button>
+        <button class="btn btn-primary">Primary</button>
+        <button class="btn btn-secondary">Secondary</button>
+        <button class="btn btn-accent">Accent</button>
+        <button class="btn btn-info">Info</button>
+        <button class="btn btn-success">Success</button>
+        <button class="btn btn-warning">Warning</button>
+        <button class="btn btn-error">Error</button>
+        <button class="btn btn-outline">Outline</button>
+      </div>
+    </section>
+
+  <!-- ALERTS -->
+    <section>
+      <h2 class="mb-4 text-xl font-bold">Alerts</h2>
+      <div class="space-y-3">
+        <div class="alert alert-info">Info alert</div>
+        <div class="alert alert-success">Success alert</div>
+        <div class="alert alert-warning">Warning alert</div>
+        <div class="alert alert-error">Error alert</div>
+      </div>
+    </section>
+
+  <!-- BADGES -->
+    <section>
+      <h2 class="mb-4 text-xl font-bold">Badges</h2>
+      <div class="flex items-center gap-2">
+        <span class="badge">Default</span>
+        <span class="badge badge-primary">Primary</span>
+        <span class="badge badge-secondary">Secondary</span>
+        <span class="badge badge-accent">Accent</span>
+        <span class="badge badge-success">Success</span>
+        <span class="badge badge-warning">Warning</span>
+        <span class="badge badge-error">Error</span>
+      </div>
+    </section>
+
+  <!-- CARDS -->
+    <section>
+      <h2 class="mb-4 text-xl font-bold">Card</h2>
+      <div class="card bg-base-100 w-96 shadow">
+        <div class="card-body">
+          <h2 class="card-title">Example Card</h2>
+          <p>This is a simple card with actions.</p>
+          <div class="card-actions justify-end">
+            <button class="btn btn-primary">Action</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  <!-- TABS -->
+    <section x-data="{ tab: 1 }">
+      <h2 class="mb-4 text-xl font-bold">Tabs</h2>
+
+      <div class="tabs tabs-boxed mb-4">
+        <a class="tab" :class="{ 'tab-active': tab===1 }" @click="tab=1">Tab 1</a>
+        <a class="tab" :class="{ 'tab-active': tab===2 }" @click="tab=2">Tab 2</a>
+        <a class="tab" :class="{ 'tab-active': tab===3 }" @click="tab=3">Tab 3</a>
+      </div>
+
+      <div class="bg-base-100 rounded p-4 shadow">
+        <template x-if="tab===1">
+          <p>Content for Tab 1.</p>
+        </template>
+        <template x-if="tab===2">
+          <p>Content for Tab 2.</p>
+        </template>
+        <template x-if="tab===3">
+          <p>Content for Tab 3.</p>
+        </template>
+      </div>
+    </section>
+
+  <!-- TABLE -->
+    <section>
+      <h2 class="mb-4 text-xl font-bold">Table</h2>
+      <div class="bg-base-100 overflow-x-auto rounded shadow">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Status</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Alice</td>
+              <td><span class="badge badge-success">Active</span></td>
+              <td>Admin</td>
+            </tr>
+            <tr>
+              <td>Bob</td>
+              <td><span class="badge badge-warning">Pending</span></td>
+              <td>Editor</td>
+            </tr>
+            <tr>
+              <td>Charlie</td>
+              <td><span class="badge badge-error">Banned</span></td>
+              <td>Viewer</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  <!-- FORM -->
+    <section>
+      <h2 class="mb-4 text-xl font-bold">Forms</h2>
+      <form class="bg-base-100 max-w-lg space-y-4 rounded p-6 shadow">
+        <input type="text" placeholder="Text input" class="input input-bordered w-full" />
+        <select class="select select-bordered w-full">
+          <option>Choose option</option>
+          <option>Alpha</option>
+          <option>Beta</option>
+        </select>
+        <textarea class="textarea textarea-bordered w-full" placeholder="Textarea"></textarea>
+        <button class="btn btn-primary">Submit</button>
+      </form>
+    </section>
+
+  <!-- PAGINATION -->
+    <section>
+      <h2 class="mb-4 text-xl font-bold">Pagination</h2>
+      <div class="join">
+        <button class="join-item btn">«</button>
+        <button class="join-item btn btn-primary">1</button>
+        <button class="join-item btn">2</button>
+        <button class="join-item btn">3</button>
+        <button class="join-item btn">»</button>
+      </div>
+    </section>
+
+  <!-- MODAL -->
+    <section x-data="{ open:false }">
+      <h2 class="mb-4 text-xl font-bold">Modal</h2>
+      <button class="btn btn-primary" @click="open=true">Open Modal</button>
+
+      <div class="modal" :class="{ 'modal-open': open }">
+        <div class="modal-box">
+          <h3 class="text-lg font-bold">Modal Title</h3>
+          <p class="py-4">This is an Alpine-powered modal.</p>
+          <div class="modal-action">
+            <button class="btn" @click="open=false">Close</button>
+          </div>
+        </div>
+      </div>
+    </section>
 
   <!-- COLLAPSE -->
-  <section>
-    <h2 class="mb-4 text-xl font-bold">Collapse</h2>
-    <div tabindex="0" class="collapse-arrow bg-base-100 collapse shadow">
-      <input type="checkbox" />
-      <div class="collapse-title text-lg font-medium">Click to expand</div>
-      <div class="collapse-content">
-        <p>Hidden content here.</p>
+    <section>
+      <h2 class="mb-4 text-xl font-bold">Collapse</h2>
+      <div tabindex="0" class="collapse-arrow bg-base-100 collapse shadow">
+        <input type="checkbox" />
+        <div class="collapse-title text-lg font-medium">Click to expand</div>
+        <div class="collapse-content">
+          <p>Hidden content here.</p>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
   <!-- ACCORDION -->
-  <section class="space-y-2">
-    <h2 class="mb-4 text-xl font-bold">Accordion</h2>
-    <details class="bg-base-100 collapse shadow">
-      <summary class="collapse-title">Item 1</summary>
-      <div class="collapse-content">Content 1</div>
-    </details>
-    <details class="bg-base-100 collapse shadow">
-      <summary class="collapse-title">Item 2</summary>
-      <div class="collapse-content">Content 2</div>
-    </details>
-  </section>
+    <section class="space-y-2">
+      <h2 class="mb-4 text-xl font-bold">Accordion</h2>
+      <details class="bg-base-100 collapse shadow">
+        <summary class="collapse-title">Item 1</summary>
+        <div class="collapse-content">Content 1</div>
+      </details>
+      <details class="bg-base-100 collapse shadow">
+        <summary class="collapse-title">Item 2</summary>
+        <div class="collapse-content">Content 2</div>
+      </details>
+    </section>
 
   <!-- PROGRESS -->
-  <section>
-    <h2 class="mb-4 text-xl font-bold">Progress</h2>
-    <progress class="progress w-56" value="40" max="100"></progress>
-  </section>
+    <section>
+      <h2 class="mb-4 text-xl font-bold">Progress</h2>
+      <progress class="progress w-56" value="40" max="100"></progress>
+    </section>
 
   <!-- AVATAR -->
-  <section>
-    <h2 class="mb-4 text-xl font-bold">Avatars</h2>
-    <div class="avatar-group -space-x-4">
-      <div class="avatar">
-        <div class="w-12 rounded"><img src="https://i.pravatar.cc/150?u=1" /></div>
+    <section>
+      <h2 class="mb-4 text-xl font-bold">Avatars</h2>
+      <div class="avatar-group -space-x-4">
+        <div class="avatar">
+          <div class="w-12 rounded"><img src="https://i.pravatar.cc/150?u=1" /></div>
+        </div>
+        <div class="avatar">
+          <div class="w-12 rounded"><img src="https://i.pravatar.cc/150?u=2" /></div>
+        </div>
+        <div class="avatar">
+          <div class="w-12 rounded"><img src="https://i.pravatar.cc/150?u=3" /></div>
+        </div>
       </div>
-      <div class="avatar">
-        <div class="w-12 rounded"><img src="https://i.pravatar.cc/150?u=2" /></div>
-      </div>
-      <div class="avatar">
-        <div class="w-12 rounded"><img src="https://i.pravatar.cc/150?u=3" /></div>
-      </div>
-    </div>
-  </section>
+    </section>
 
   <!-- TOOLTIP -->
-  <section>
-    <h2 class="mb-4 text-xl font-bold">Tooltip</h2>
-    <button class="btn" data-tip="Tooltip example">Hover me</button>
-  </section>
+    <section>
+      <h2 class="mb-4 text-xl font-bold">Tooltip</h2>
+      <button class="btn" data-tip="Tooltip example">Hover me</button>
+    </section>
 
   <!-- TOAST -->
-  <section x-data="{ show:false }">
-    <h2 class="mb-4 text-xl font-bold">Toast</h2>
-    <button class="btn btn-success" @click="show=true; setTimeout(()=>show=false,3000)">
-      Show Toast
-    </button>
+    <section x-data="{ show:false }">
+      <h2 class="mb-4 text-xl font-bold">Toast</h2>
+      <button class="btn btn-success" @click="show=true; setTimeout(()=>show=false,3000)">
+        Show Toast
+      </button>
 
-    <div class="toast toast-end" x-show="show" x-transition>
-      <div class="alert alert-success">This is a toast message.</div>
-    </div>
-  </section>
+      <div class="toast toast-end" x-show="show" x-transition>
+        <div class="alert alert-success">This is a toast message.</div>
+      </div>
+    </section>
 
   <!-- STEPS -->
-  <section>
-    <h2 class="mb-4 text-xl font-bold">Steps</h2>
-    <ul class="steps">
-      <li class="step step-primary">Start</li>
-      <li class="step step-primary">Processing</li>
-      <li class="step">Review</li>
-      <li class="step">Done</li>
-    </ul>
-  </section>
+    <section>
+      <h2 class="mb-4 text-xl font-bold">Steps</h2>
+      <ul class="steps">
+        <li class="step step-primary">Start</li>
+        <li class="step step-primary">Processing</li>
+        <li class="step">Review</li>
+        <li class="step">Done</li>
+      </ul>
+    </section>
 
   <!-- DROPDOWN -->
-  <section>
-    <h2 class="mb-4 text-xl font-bold">Dropdown</h2>
-    <div class="dropdown">
-      <div tabindex="0" role="button" class="btn">Dropdown</div>
-      <ul tabindex="0" class="dropdown-content menu bg-base-100 w-52 rounded p-2 shadow">
-        <li><a>Item 1</a></li>
-        <li><a>Item 2</a></li>
-      </ul>
-    </div>
-  </section>
-</div>
+    <section>
+      <h2 class="mb-4 text-xl font-bold">Dropdown</h2>
+      <div class="dropdown">
+        <div tabindex="0" role="button" class="btn">Dropdown</div>
+        <ul tabindex="0" class="dropdown-content menu bg-base-100 w-52 rounded p-2 shadow">
+          <li><a>Item 1</a></li>
+          <li><a>Item 2</a></li>
+        </ul>
+      </div>
+    </section>
+  </div>
 {% endblock %}

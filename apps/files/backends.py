@@ -1,7 +1,7 @@
 # ffmpeg only backend
 
 import locale
-import logging
+import structlog as logging
 import re
 from subprocess import PIPE, Popen
 

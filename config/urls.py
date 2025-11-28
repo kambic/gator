@@ -9,8 +9,6 @@ from rest_framework.permissions import AllowAny
 from django.conf.urls.static import static
 
 
-# --- Schema View Setup (No change needed) ---
-
 schema_view = get_schema_view(
     openapi.Info(title="MediaCMS API", default_version='v1', contact=openapi.Contact(url="https://mediacms.io"), x_logo={"url": "../../static/images/logo_dark.svg"}),
     public=True,
@@ -63,6 +61,7 @@ if settings.DEBUG:
     # 📝 Added static file serving for files in MEDIA_ROOT for local development
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += [path('silk/', include('silk.urls', namespace='silk'))]
 
 
 if 'debug_toolbar' in settings.INSTALLED_APPS:

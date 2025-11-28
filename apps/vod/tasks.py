@@ -22,7 +22,7 @@ PROVIDER_XSD_MAP = {
 
 _schema_cache = {}
 
-import logging
+import structlog as logging
 
 logger = logging.getLogger(__name__)
 

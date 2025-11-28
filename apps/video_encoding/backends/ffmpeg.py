@@ -1,6 +1,6 @@
 import io
 import json
-import logging
+import structlog as logging
 import os
 import re
 import subprocess
@@ -32,22 +32,14 @@ class FFmpegBackend(BaseEncodingBackend):
             '-2',  # support aac codec (which is experimental)
         ]
 
-        self.ffmpeg_path: str = getattr(
-            settings, 'VIDEO_ENCODING_FFMPEG_PATH', which('ffmpeg')
-        )
-        self.ffprobe_path: str = getattr(
-            settings, 'VIDEO_ENCODING_FFPROBE_PATH', which('ffprobe')
-        )
+        self.ffmpeg_path: str = getattr(settings, 'VIDEO_ENCODING_FFMPEG_PATH', which('ffmpeg'))
+        self.ffprobe_path: str = getattr(settings, 'VIDEO_ENCODING_FFPROBE_PATH', which('ffprobe'))
 
         if not self.ffmpeg_path:
-            raise exceptions.FFmpegError(
-                "ffmpeg binary not found: {}".format(self.ffmpeg_path or '')
-            )
+            raise exceptions.FFmpegError("ffmpeg binary not found: {}".format(self.ffmpeg_path or ''))
 
         if not self.ffprobe_path:
-            raise exceptions.FFmpegError(
-                "ffprobe binary not found: {}".format(self.ffmpeg_path or '')
-            )
+            raise exceptions.FFmpegError("ffprobe binary not found: {}".format(self.ffmpeg_path or ''))
 
     @classmethod
     def check(cls) -> List[checks.Error]:
@@ -76,9 +68,7 @@ class FFmpegBackend(BaseEncodingBackend):
         except OSError as e:
             raise exceptions.FFmpegError('Error while running ffmpeg binary') from e
 
-    def encode(
-        self, source_path: str, target_path: str, params: List[str]
-    ) -> Generator[float, None, None]:
+    def encode(self, source_path: str, target_path: str, params: List[str]) -> Generator[float, None, None]:
         """
         Encode a video.
 
@@ -115,31 +105,15 @@ class FFmpegBackend(BaseEncodingBackend):
             raise exceptions.FFmpegError("File size of generated file is 0")
 
         if process.returncode != 0:
-            raise exceptions.FFmpegError(
-                "`{}` exited with code {:d}".format(
-                    ' '.join(map(str, process.args)), process.returncode
-                )
-            )
+            raise exceptions.FFmpegError("`{}` exited with code {:d}".format(' '.join(map(str, process.args)), process.returncode))
 
         yield 100
 
     def _parse_media_info(self, data: bytes) -> Dict:
         media_info = json.loads(data)
-        media_info['video'] = [
-            stream
-            for stream in media_info['streams']
-            if stream['codec_type'] == 'video'
-        ]
-        media_info['audio'] = [
-            stream
-            for stream in media_info['streams']
-            if stream['codec_type'] == 'audio'
-        ]
-        media_info['subtitle'] = [
-            stream
-            for stream in media_info['streams']
-            if stream['codec_type'] == 'subtitle'
-        ]
+        media_info['video'] = [stream for stream in media_info['streams'] if stream['codec_type'] == 'video']
+        media_info['audio'] = [stream for stream in media_info['streams'] if stream['codec_type'] == 'audio']
+        media_info['subtitle'] = [stream for stream in media_info['streams'] if stream['codec_type'] == 'subtitle']
         del media_info['streams']
         return media_info
 
@@ -148,7 +122,7 @@ class FFmpegBackend(BaseEncodingBackend):
         Return information about the given video.
         """
         cmd = [self.ffprobe_path, '-i', video_path]
-        cmd.extend(['-hide_banner',  '-loglevel', 'warning'])
+        cmd.extend(['-hide_banner', '-loglevel', 'warning'])
         cmd.extend(['-print_format', 'json'])
         cmd.extend(['-show_format', '-show_streams'])
 

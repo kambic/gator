@@ -1,188 +1,196 @@
 {% extends 'core/base.html' %}
 {% block title %}Edgewares{% endblock %}
 {% block content %}
-<div x-data="edgewareList()" x-init="load()" class="mx-auto max-w-10xl p-6">
-  <div class="mb-6 flex items-center justify-between">
-    <h1 class="text-primary text-4xl font-bold">Edgewares</h1>
-    <a href="{% url 'core:providers-list' %}" class="btn btn-ghost">Providers</a>
-  </div>
+  <div x-data="edgewareList()" x-init="load()" class="mx-auto max-w-10xl p-6">
+    <div class="mb-6 flex items-center justify-between">
+      <h1 class="text-primary text-4xl font-bold">Edgewares</h1>
+      <a href="{% url 'core:providers-list' %}" class="btn btn-ghost">Providers</a>
+    </div>
 
   <!-- Filters -->
-  <div class="card bg-base-100 mb-6 shadow">
-    <div class="card-body grid grid-cols-2 gap-4 md:grid-cols-4">
-      <input
-        x-model.debounce.500ms="filters.search"
-        placeholder="Search..."
-        class="input input-bordered"
-      />
+    <div class="card bg-base-100 mb-6 shadow">
+      <div class="card-body grid grid-cols-2 gap-4 md:grid-cols-4">
+        <input
+          x-model.debounce.500ms="filters.search"
+          placeholder="Search..."
+          class="input input-bordered"
+        />
 
-      <select x-model="filters.status" @change="page=1; load()" class="select select-bordered">
-        <option value="">All Status</option>
-        {% for v, l in Edgeware.Status.choices %}
-        <option value="{{ v }}">{{ l }}</option>
-        {% endfor %}
-      </select>
+        <select x-model="filters.status" @change="page=1; load()" class="select select-bordered">
+          <option value="">All Status</option>
+          {% for v, l in Edgeware.Status.choices %}
+            <option value="{{ v }}">{{ l }}</option>
+          {% endfor %}
+        </select>
 
-      <select x-model="filters.encoder" @change="page=1; load()" class="select select-bordered">
-        <option value="">All Encoders</option>
-        <option value="vidra">VIDRA</option>
-        <option value="ateme">ATEME</option>
-      </select>
+        <select x-model="filters.encoder" @change="page=1; load()" class="select select-bordered">
+          <option value="">All Encoders</option>
+          <option value="vidra">VIDRA</option>
+          <option value="ateme">ATEME</option>
+        </select>
 
-      <select x-model="filters.provider" @change="page=1; load()" class="select select-bordered">
-        <option value="">All Providers</option>
-        {% for p in providers %}
-        <option value="{{ p.id }}">{{ p.user.username }}</option>
-        {% endfor %}
-      </select>
+        <select x-model="filters.provider" @change="page=1; load()" class="select select-bordered">
+          <option value="">All Providers</option>
+          {% for p in providers %}
+            <option value="{{ p.id }}">{{ p.user.username }}</option>
+          {% endfor %}
+        </select>
+      </div>
     </div>
-  </div>
 
   <!-- Stats -->
-  <div class="mb-6 grid grid-cols-5 gap-4">
-    <template x-for="(val, key) in stats" :key="key">
-      <div class="bg-base-100 rounded-xl p-5 text-center shadow">
-        <div class="text-2xl font-bold" :class="val.color" x-text="val.count"></div>
-        <div class="text-sm opacity-70" x-text="val.label"></div>
-      </div>
-    </template>
-  </div>
+    <div class="mb-6 grid grid-cols-5 gap-4">
+      <template x-for="(val, key) in stats" :key="key">
+        <div class="bg-base-100 rounded-xl p-5 text-center shadow">
+          <div class="text-2xl font-bold" :class="val.color" x-text="val.count"></div>
+          <div class="text-sm opacity-70" x-text="val.label"></div>
+        </div>
+      </template>
+    </div>
+
+  <pre>
+    {{ stats }}
+  </pre>
+  <pre>
+    {{ aggregate }}
+  </pre>
 
   <!-- Table -->
-  <div class="bg-base-100 overflow-x-auto rounded-xl shadow">
-    <table class="table-zebra table">
-      <thead>
-        <tr>
-          <th>Title / EW ID</th>
-          <th>Provider</th>
-          <th>Status</th>
-          <th>Streams</th>
-          <th>Duration</th>
-          <th>Dates</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <template x-for="e in edgewares" :key="e.id">
-          <tr class="hover cursor-pointer" @click="goToProvider(e.provider)">
-            <td>
-              <div class="font-bold" x-text="e.title || 'Untitled'"></div>
-              <div class="text-xs opacity-70">
-                <span x-text="e.ew_id"></span>
-                <span x-show="e.expired" class="badge badge-error badge-xs ml-2">EXPIRED</span>
-              </div>
-            </td>
-            <td x-text="e.provider_name"></td>
-            <td>
-              <span
-                class="badge badge-sm"
-                :class="e.status === 'done' ? 'badge-success' :
-                            e.status.includes('error') ? 'badge-error' :
-                            e.status === 'ew_pending' ? 'badge-warning' : 'badge-ghost'"
-                x-text="e.status_display"
-              >
-              </span>
-            </td>
-            <td class="text-center">
-              <template x-for="s in e.streams">
-                <span
-                  class="badge badge-xs badge-primary mr-1"
-                  x-text="s.type.toUpperCase()"
-                ></span>
-              </template>
-            </td>
-            <td x-text="e.duration || '—'"></td>
-            <td class="text-xs">
-              <div x-text="formatDate(e.ingested)"></div>
-              <div class="text-error" x-show="e.expired" x-text="formatDate(e.expired)"></div>
-            </td>
-            <td @click.stop>
-              <button @click="copy(e.streams[0]?.uri)" class="btn btn-xs">📋</button>
-            </td>
+    <div class="bg-base-100 overflow-x-auto rounded-xl shadow">
+      <table class="table-zebra table">
+        <thead>
+          <tr>
+            <th>Title / EW ID</th>
+            <th>Provider</th>
+            <th>Status</th>
+            <th>Streams</th>
+            <th>Duration</th>
+            <th>Dates</th>
+            <th></th>
           </tr>
-        </template>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <template x-for="e in edgewares" :key="e.id">
+            <tr class="hover cursor-pointer" @click="goToProvider(e.provider)">
+              <td>
+                <div class="font-bold" x-text="e.title || 'Untitled'"></div>
+                <div class="text-xs opacity-70">
+                  <span x-text="e.ew_id"></span>
+                  <span x-show="e.expired" class="badge badge-error badge-xs ml-2">EXPIRED</span>
+                </div>
+              </td>
+              <td x-text="e.provider_name"></td>
+              <td>
+                <span
+                  class="badge badge-sm"
+                  :class="e.status === 'done' ? 'badge-success' :
+                          e.status.includes('error') ? 'badge-error' :
+                          e.status === 'ew_pending' ? 'badge-warning' : 'badge-ghost'"
+                  x-text="e.status_display"
+                >
+                </span>
+              </td>
+              <td class="text-center">
+                <template x-for="s in e.streams">
+                  <span
+                    class="badge badge-xs badge-primary mr-1"
+                    x-text="s.type.toUpperCase()"
+                  ></span>
+                </template>
+              </td>
+              <td x-text="e.duration || '—'"></td>
+              <td class="text-xs">
+                <div x-text="formatDate(e.ingested)"></div>
+                <div class="text-error" x-show="e.expired" x-text="formatDate(e.expired)"></div>
+              </td>
+              <td @click.stop>
+                <button @click="copy(e.streams[0]?.uri)" class="btn btn-xs">📋</button>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
 
     <!-- Pagination -->
-    <div class="flex justify-between border-t p-4">
-      <div x-text="`Showing ${edgewares.length} of ${count}`"></div>
-      <div class="join">
-        <button @click="load(prev)" :disabled="!prev" class="join-item btn btn-sm">‹ Prev</button>
-        <button @click="load(next)" :disabled="!next" class="join-item btn btn-sm">Next ›</button>
+      <div class="flex justify-between border-t p-4">
+        <div x-text="`Showing ${edgewares.length} of ${count}`"></div>
+        <div class="join">
+          <button @click="load(prev)" :disabled="!prev" class="join-item btn btn-sm">‹ Prev</button>
+          <button @click="load(next)" :disabled="!next" class="join-item btn btn-sm">Next ›</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<script>
-  function edgewareList() {
-    return {
-      edgewares: [],
-      count: 0,
-      next: null,
-      prev: null,
-      filters: { search: '', status: '', encoder: '', provider: '' },
-      page: 1,
+  <script>
+    function edgewareList() {
+      return {
+        edgewares: [],
+        stats : [],
+        count: 0,
+        next: null,
+        prev: null,
+        filters: { search: '', status: '', encoder: '', provider: '' },
+        page: 1,
 
-      api: '{% url "core:edgeware-list" %}',
+        api: '{% url "core:edge-list" %}',
 
-      load(url = null) {
-        const u = url || this.api;
-        const params = new URLSearchParams({
-          page: this.page,
-          search: this.filters.search,
-          status: this.filters.status,
-          encoder: this.filters.encoder,
-          provider: this.filters.provider,
-          ordering: '-ingested',
-        });
-
-        fetch(`${u}?${params}`)
-          .then((r) => r.json())
-          .then((data) => {
-            this.edgewares = data.results;
-            this.count = data.count;
-            this.next = data.next;
-            this.prev = data.previous;
-            this.updateStats();
+        load(url = null) {
+          const u = url || this.api;
+          const params = new URLSearchParams({
+            page: this.page,
+            search: this.filters.search,
+            status: this.filters.status,
+            encoder: this.filters.encoder,
+            provider: this.filters.provider,
+            ordering: '-ingested',
           });
-      },
 
-      updateStats() {
+          fetch(`${u}?${params}`)
+            .then((r) => r.json())
+            .then((data) => {
+              this.edgewares = data.results;
+              this.count = data.count;
+              this.next = data.next;
+              this.prev = data.previous;
+              this.updateStats();
+            });
+        },
+
+        updateStats() {
         // Simple client-side stats
-        const done = this.edgewares.filter((e) => e.status === 'done').length;
-        const pending = this.edgewares.filter((e) => e.status === 'ew_pending').length;
-        const errors = this.edgewares.filter((e) => e.status.includes('error')).length;
-        const playable = this.edgewares.filter((e) => e.playable).length;
-        const expired = this.edgewares.filter((e) => e.expired).length;
+          const done = {{ stats.done }}
+          const pending = {{ stats.pending }}
+          const errors = {{ stats.errors }}
+          const playable = {{ stats.playable }}
+          const expired = {{ stats.expired }}
 
-        this.stats = {
-          success: { label: 'Success', count: done, color: 'text-success' },
-          pending: { label: 'Pending', count: pending, color: 'text-warning' },
-          errors: { label: 'Errors', count: errors, color: 'text-error' },
-          playable: { label: 'Playable', count: playable, color: 'text-info' },
-          expired: { label: 'Expired', count: expired, color: 'text-accent' },
-        };
-      },
+          this.stats = {
+            success: { label: 'Success', count: done, color: 'text-success' },
+            pending: { label: 'Pending', count: pending, color: 'text-warning' },
+            errors: { label: 'Errors', count: errors, color: 'text-error' },
+            playable: { label: 'Playable', count: playable, color: 'text-info' },
+            expired: { label: 'Expired', count: expired, color: 'text-accent' },
+          };
+        },
 
-      goToProvider(id) {
-        location.href = `/providers/${id}/`;
-      },
-      copy(text) {
-        if (text) {
-          navigator.clipboard.writeText(text);
-          alert('Copied!');
-        }
-      },
-      formatDate(d) {
-        return d
-          ? new Date(d).toLocaleDateString() +
-              ' ' +
-              new Date(d).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          : '';
-      },
-    };
-  }
-</script>
+        goToProvider(id) {
+          location.href = `/providers/${id}/`;
+        },
+        copy(text) {
+          if (text) {
+            navigator.clipboard.writeText(text);
+            alert('Copied!');
+          }
+        },
+        formatDate(d) {
+          return d
+            ? new Date(d).toLocaleDateString() +
+          ' ' +
+          new Date(d).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            : '';
+        },
+      };
+    }
+  </script>
 {% endblock %}

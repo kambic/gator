@@ -1,6 +1,6 @@
 import glob
 import json
-import logging
+import structlog as logging
 import os
 import random
 import uuid
@@ -76,7 +76,7 @@ class Media(models.Model):
     hls_file = models.CharField(max_length=1000, blank=True, help_text="Path to HLS file for videos")
 
     is_reviewed = models.BooleanField(
-        default=settings.MEDIA_IS_REVIEWED,
+        default=True,
         db_index=True,
         help_text="Whether media is reviewed, so it can appear on public listings",
     )

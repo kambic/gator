@@ -1,5 +1,4 @@
 {% extends "layout.html" %}
-{% load math_filters %}
 {% load static %}
 
 {% block title %}{{ title }}{% endblock %}
@@ -35,10 +34,10 @@
         {% for file in file_list %}
           <tr>
             <td>{{ file.name }}</td>
-            <td>{{ file.size|floatformat:0|div:1048576 }}</td>
+            <td>{{ file.size|floatformat:0 }}</td>
             <td>{{ file.modified|date:"Y-m-d H:i:s" }}</td>
             <td>
-              <form method="post" action="{% url 'dashboard:start' %}" style="display:inline;">
+              <form method="post" action="#" style="display:inline;">
                 {% csrf_token %}
                 <input type="hidden" name="file_path" value="{{ file.path }}">
                 <button type="submit" class="btn btn-sm btn-primary">

@@ -1,5 +1,5 @@
 import json
-import logging
+import structlog as logging
 import shutil
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -13,7 +13,7 @@ from django.utils.translation import gettext_lazy as _
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
 
-from .backends import AtemeApi
+from vidra_kit.backends import AtemeApi
 from ..utils.models import TimeStampedModel
 
 logger = logging.getLogger(__name__)
@@ -25,9 +25,7 @@ class ProviderManager(models.Manager):
 
 
 class Provider(models.Model):
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True
-    )
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
     active = models.BooleanField(default=False)
     use_staging_db = models.BooleanField(default=True)
     enable_drm = models.BooleanField(default=True)
@@ -36,15 +34,11 @@ class Provider(models.Model):
     default_active_web = models.BooleanField(default=True)
     default_active_mobile = models.BooleanField(default=True)
     default_active_lte = models.BooleanField(default=True)
-    catalog_name = models.CharField(
-        max_length=255, blank=True, null=True, editable=True
-    )
+    catalog_name = models.CharField(max_length=255, blank=True, null=True, editable=True)
 
     vidra_task = models.CharField(max_length=255, blank=True, null=True, editable=False)
     queue = models.CharField(max_length=255, blank=True, null=True, editable=False)
-    provider_fs = models.CharField(
-        max_length=255, blank=True, null=True, editable=False
-    )
+    provider_fs = models.CharField(max_length=255, blank=True, null=True, editable=False)
 
     objects = ProviderManager()
 
@@ -138,15 +132,10 @@ class Stream(models.Model):
     uri = models.URLField(max_length=512)
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["edge", "type"], name="unq_edge_stream"
-            )
-        ]
+        constraints = [models.UniqueConstraint(fields=["edge", "type"], name="unq_edge_stream")]
 
     def __str__(self):
         return f"[{self.type}] {self.edge.title}"
-
 
 
 class VidraJob(TimeStampedModel):
@@ -171,9 +160,7 @@ class VidraJob(TimeStampedModel):
     started = models.DateTimeField(null=True, blank=True, editable=False)
     succeeded = models.DateTimeField(null=True, blank=True, editable=False)
     timestamp = models.DateTimeField(null=True, blank=True, editable=False)
-    runtime = models.DecimalField(
-        null=True, blank=True, decimal_places=2, max_digits=10
-    )
+    runtime = models.DecimalField(null=True, blank=True, decimal_places=2, max_digits=10)
 
     class Meta:
         ordering = ["-pk"]
@@ -262,9 +249,7 @@ class FileEntry(MPTTModel):
     entry_type = models.CharField(max_length=10, choices=TYPE_CHOICES)
     size = models.BigIntegerField(null=True, blank=True)
     modified = models.DateTimeField(null=True, blank=True)
-    parent = TreeForeignKey(
-        "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
-    )
+    parent = TreeForeignKey("self", on_delete=models.CASCADE, null=True, blank=True, related_name="children")
 
     class MPTTMeta:
         order_insertion_by = ["name"]
@@ -280,22 +265,11 @@ class Packet(TimeStampedModel):
         PROCESSING = "processing", "Processing"
         FAILED = "failed", "Failed"
 
-    provider = models.ForeignKey(
-        Provider, on_delete=models.CASCADE, related_name="packets", editable=False
-    )
+    provider = models.ForeignKey(Provider, on_delete=models.CASCADE, related_name="packets", editable=False)
     title = models.CharField(max_length=255, editable=False)
     delivery_time = models.DateTimeField(blank=True, null=True, editable=False)
-    status = models.CharField(
-        max_length=20, choices=Status.choices, default=Status.DELIVERED, editable=False
-    )
-    file = models.FilePathField(
-        path="/export/isilj/fenix2",
-        match=".*tar",
-        recursive=True,
-        editable=True,
-        unique=True,
-        max_length=512
-    )
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.DELIVERED, editable=False)
+    file = models.FilePathField(path="/export/isilj/fenix2", match=".*tar", recursive=True, editable=True, unique=True, max_length=512)
     size = models.BigIntegerField(null=True, blank=True)
 
     @property
@@ -371,11 +345,7 @@ class Packet(TimeStampedModel):
 
 class SFTPGoEvent(models.Model):
     # Core event info
-    event = models.CharField(
-        max_length=50,
-        db_index=True,
-        help_text="upload, download, delete, rename, etc."
-    )
+    event = models.CharField(max_length=50, db_index=True, help_text="upload, download, delete, rename, etc.")
     username = models.CharField(max_length=255, db_index=True)
     ip = models.GenericIPAddressField(db_index=True)
     role = models.CharField(max_length=100, blank=True, null=True)
@@ -392,28 +362,13 @@ class SFTPGoEvent(models.Model):
     object_type = models.CharField(max_length=50, blank=True, null=True)
 
     # Status & timing
-    status = models.PositiveSmallIntegerField(
-        choices=((1, "Success"), (2, "Error")),
-        db_index=True
-    )
-    timestamp = models.BigIntegerField(
-        help_text="SFTPGo nanosecond timestamp (Unix epoch * 1e9 + ns)"
-    )
-    date = models.DateTimeField(
-        db_index=True,
-        help_text="Human-readable ISO datetime from SFTPGo"
-    )
-    elapsed = models.PositiveIntegerField(
-        blank=True, null=True,
-        help_text="Operation time in milliseconds"
-    )
+    status = models.PositiveSmallIntegerField(choices=((1, "Success"), (2, "Error")), db_index=True)
+    timestamp = models.BigIntegerField(help_text="SFTPGo nanosecond timestamp (Unix epoch * 1e9 + ns)")
+    date = models.DateTimeField(db_index=True, help_text="Human-readable ISO datetime from SFTPGo")
+    elapsed = models.PositiveIntegerField(blank=True, null=True, help_text="Operation time in milliseconds")
 
     # Flexible fields
-    object_data = models.JSONField(
-        default=dict,
-        blank=True,
-        help_text="Extra object data (user/folder JSON when applicable)"
-    )
+    object_data = models.JSONField(default=dict, blank=True, help_text="Extra object data (user/folder JSON when applicable)")
     error = models.TextField(blank=True, null=True)
 
     # Auto-filled
@@ -436,6 +391,7 @@ class SFTPGoEvent(models.Model):
     @property
     def timestamp_datetime(self):
         from datetime import datetime, timedelta
+
         seconds = self.timestamp // 1_000_000_000
         nanoseconds = self.timestamp % 1_000_000_000
         return datetime.fromtimestamp(seconds, tz=timezone.utc) + timedelta(microseconds=nanoseconds // 1000)
@@ -465,6 +421,8 @@ class SFTPGoEvent(models.Model):
             data["date"] = local_dt
 
         return cls.objects.create(**data)
+
+
 #
 #
 # class RemoteFile(models.Model):

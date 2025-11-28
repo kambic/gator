@@ -14,10 +14,12 @@ INSTALLED_APPS += [
     "debug_toolbar",
     "corsheaders",
     'django_extensions',
+    'silk',
 ]
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    'silk.middleware.SilkyMiddleware',
 ] + MIDDLEWARE
 
 INTERNAL_IPS = ["127.0.0.1", "::1"]
