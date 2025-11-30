@@ -10,13 +10,25 @@ export default defineConfig({
   plugins: [vue(), vueDevTools(), tailwindcss()],
 
   server: {
+
     proxy: {
+
       '/api': {
         target: 'http://localhost:8000/vod/api/v1/',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
+
+      '/files': {
+        target: 'http://localhost:8000/vod/api/v1/',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+
+
     },
+
+
   },
 
   resolve: {

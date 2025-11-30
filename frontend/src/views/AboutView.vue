@@ -4,9 +4,9 @@ import DashPlayer from '@/components/DashPlayer.vue'
 const streamUrl = 'https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd'
 // Big Buck Bunny test stream (public domain)
 
-let playerInstance: dashjs.MediaPlayerClass | null = null
+let playerInstance = null
 
-const onPlayerLoaded = (player: dashjs.MediaPlayerClass) => {
+const onPlayerLoaded = (player: MediaPlayer) => {
   playerInstance = player
   console.log('Player ready!', player.getVersion())
 }
@@ -34,10 +34,5 @@ const seekForward = () => {
       @error="(e) => console.error('Player error:', e)"
     />
 
-    <div class="controls" style="margin-top: 20px;">
-      <button @click="seekForward">+10s</button>
-      <button @click="playerInstance?.pause()">Pause</button>
-      <button @click="playerInstance?.play()">Play</button>
-    </div>
   </div>
 </template>

@@ -16,7 +16,7 @@
 import { RemoteDriver, VueFinder } from 'vuefinder'
 
 const driver = new RemoteDriver({
-  baseURL: '/api',
+  baseURL: '/files',
   url: {
     list: '/files',
     upload: '/upload',
@@ -25,7 +25,7 @@ const driver = new RemoteDriver({
     archive: '/archive',
     unarchive: '/unarchive',
     createFile: '/create-file',
-    createFolder: '/create-folder',
+    createFolder: '/create/',
     search: '/search',
     preview: '/preview',
     copy: '/copy',

@@ -5,11 +5,13 @@
         <div class="card-body gap-4">
           <h1 class="card-title">VIDRA Analyzer</h1>
           <div class="flex gap-2">
+
             <input
               v-model="manifestUrl"
               class="input input-bordered flex-1"
               placeholder="Enter DASH MPD URL"
             />
+
             <button class="btn btn-primary" @click="initPlayer">Load</button>
             <button class="btn" @click="clearData">Reset</button>
           </div>
@@ -80,8 +82,6 @@ const manifestUrl = ref(
 const logs = ref([])
 
 let player
-let bufferChart
-let bitrateChart
 
 const buffer = ref(0)
 const currentQuality = ref('-')
