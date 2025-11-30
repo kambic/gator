@@ -3,81 +3,55 @@ import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <template>
-  <header>
-
-    <div class="wrapper">
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-        <RouterLink to="/Files">F</RouterLink>
-
-      </nav>
+  <!-- Navbar with DaisyUI styling -->
+  <div class="navbar bg-base-100 shadow-lg sticky top-0 z-50">
+    <div class="flex-1">
+      <!-- Optional: Add a logo or brand name -->
+      <RouterLink to="/" class="btn btn-ghost text-xl font-bold">
+        MyApp
+      </RouterLink>
     </div>
-  </header>
 
-  <RouterView />
+    <div class="flex-none">
+      <ul class="menu menu-horizontal px-1">
+        <li>
+          <RouterLink
+            to="/"
+            class="rounded-lg"
+            active-class="bg-primary text-primary-content"
+            exact-active-class="bg-primary text-primary-content"
+          >
+            Home
+          </RouterLink>
+        </li>
+        <li>
+          <RouterLink
+            to="/about"
+            class="rounded-lg"
+            active-class="bg-primary text-primary-content"
+          >
+            About
+          </RouterLink>
+        </li>
+        <li>
+          <RouterLink
+            to="/files"
+            class="rounded-lg"
+            active-class="bg-primary text-primary-content"
+          >
+            Files
+          </RouterLink>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Main content area -->
+  <main class="min-h-screen bg-base-200">
+    <div class="container mx-auto px-4 py-8">
+      <RouterView />
+    </div>
+  </main>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>
+<!-- No custom CSS needed! DaisyUI + Tailwind handles everything -->

@@ -1,28 +1,36 @@
+// src/router/index.ts
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import DefaultLayout from '@/layouts/DefaultLayout.vue'
+import AuthLayout from '@/layouts/AuthLayout.vue'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes: [
-
     {
       path: '/',
-      name: 'home',
-      component: HomeView,
+      component: DefaultLayout,
+      children: [
+        { path: '', name: 'home', component: () => import('@/views/HomeView.vue') },
+        { path: 'about', component: () => import('@/views/AboutView.vue') },
+        { path: 'dashboard', component: () => import('@/views/dashboard/Home.vue') },
+      ],
     },
     {
-      path: '/d',
-      name: 'dash',
-      component: () => import('../views/DashView.vue'),
+      path: '/auth',
+      component: AuthLayout,
+      children: [
+        { path: 'login', component: () => import('@/views/auth/LoginView.vue') },
+        { path: 'register', component: () => import('@/views/auth/RegisterView.vue') },
+      ],
     },
-
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      path: '/dashboard',
+      component: () => import('@/layouts/DashboardLayout.vue'),
+      children: [
+        { path: '', component: () => import('@/views/dashboard/Home.vue') },
+        { path: 'users', component: () => import('@/views/dashboard/Users.vue') },
+        { path: 'files', component: () => import('@/views/dashboard/Files.vue') },
+      ],
     },
   ],
 })
